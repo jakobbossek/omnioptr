@@ -1,0 +1,21 @@
+Package: omnioptr
+Title: OmniOptimizer in R
+Description: Interface to the OmniOptimizer solver for continuous multi-objective problems.
+Version: 1.0.0.0000
+Encoding: UTF-8
+Date: 2021-06-23
+Authors@R: c(
+    person("Jakob", "Bossek", email = "j.bossek@gmail.com", role = c("aut", "cre")))
+Maintainer: Jakob Bossek <j.bossek@gmail.com>
+License: GPL-3 | file LICENSE
+URL: https://github.com/jakobbossek/omnioptr
+BugReports: https://github.com/jakobbossek/omnioptr/issues
+Depends:
+    R (>= 3.4)
+Imports:
+    checkmate (>= 1.1)
+Suggests:
+    testthat (>= 0.9.1)
+ByteCompile: yes
+LazyData: yes
+RoxygenNote: 7.1.1

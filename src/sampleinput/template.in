@@ -1,0 +1,31 @@
+120             | pop size
+100             | number of generations
+2               | number of objectives
+0               | number of constraints
+2               | number of real variables
+0 1             | lower and upper bound of real variable 1
+0 1             | lower and upper bound of real variable 2
+.
+.
+.
+0.9             | Probability of crossover of real variable
+0.5             | Probability of mutation of real variable
+10              | Distribution index for crossover
+20              | Distribution index for mutation
+2               | number of binary variables
+5 0.0 1.0       | number of bits, lower bound, upper bound for binary variable 1
+5 0.0 1.0       | number of bits, lower bound, upper bound for binary variable 2
+.
+.
+.
+0.9             | Probability of crossover of binary variable
+0.5             | Probability of mutation of binary variable
+1               | Selection Restriction (0 for no, 1 for yes)
+0.001           | delta for loose domination
+1               | Variable space niching (0 for no, 1 for yes)
+1               | Objective space niching (0 for no, 1 for yes)
+1               | Initial population (0 for random, 1 for latin-hyper-cube, 2 for file
+10              | Frequency of storing the population
+0               | Simulation mode (0 for analysis, 1 for turbo)
+1               | objective for x axis display
+2               | objective for y axis display
