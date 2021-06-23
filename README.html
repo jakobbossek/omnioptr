@@ -34,9 +34,12 @@ body {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">=</span> smoof<span class="sc">::</span><span class="fu">makeDTLZ1Function</span>(<span class="at">dimensions =</span> 2L, <span class="at">n.objectives =</span> 2L)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">=</span> smoof<span class="sc">::</span><span class="fu">addLoggingWrapper</span>(fn, <span class="at">logg.x =</span> <span class="cn">TRUE</span>, <span class="at">logg.y =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">omniopt</span>(fn, <span class="at">pop.size =</span> 4L, <span class="at">n.gens =</span> 10L)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(res)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(smoof<span class="sc">::</span><span class="fu">getLoggedValues</span>(fn, <span class="at">compact =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">52357</span>) <span class="co"># reproducibility</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">omniopt</span>(fn, <span class="at">pop.size =</span> 20L, <span class="at">n.gens =</span> 100L)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(res)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(smoof<span class="sc">::</span><span class="fu">getLoggedValues</span>(fn, <span class="at">compact =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">t</span>(res<span class="sc">$</span>pareto.front))</span></code></pre></div>
 <h2 id="installation-instructions">Installation Instructions</h2>
 <p>The package will be available at <a href="http://cran.r-project.org">CRAN</a> <em>when it is done</em>. If you are interested in trying out and playing around with the current github developer version use the <a href="https://github.com/hadley/devtools">devtools</a> package and type the following command in R:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;jakobbossek/omnioptr&quot;</span>)</span></code></pre></div>

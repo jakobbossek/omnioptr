@@ -16,10 +16,12 @@ library(smoof)
 
 fn = smoof::makeDTLZ1Function(dimensions = 2L, n.objectives = 2L)
 fn = smoof::addLoggingWrapper(fn, logg.x = TRUE, logg.y = TRUE)
-res = omniopt(fn, pop.size = 4L, n.gens = 10L)
+
+set.seed(52357) # reproducibility
+res = omniopt(fn, pop.size = 20L, n.gens = 100L)
 print(res)
 print(smoof::getLoggedValues(fn, compact = TRUE))
-
+plot(t(res$pareto.front))
 ```
 
 ## Installation Instructions

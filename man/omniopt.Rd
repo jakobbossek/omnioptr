@@ -4,8 +4,51 @@
 \alias{omniopt}
 \title{OmniOptimizer.}
 \usage{
-omniopt(fn, pop.size, n.gens, envir = environment())
+omniopt(
+  fn,
+  pop.size = 4L,
+  n.gens = 100L,
+  seed = runif(1),
+  envir = environment()
+)
+}
+\arguments{
+\item{fn}{[\code{function}]\cr
+Multi-objective function of type \code{smoof_function} (see \CRANpkg{smoof}).}
+
+\item{pop.size}{[\code{integer(1)}]\cr
+Population size. Must be a multiple of 4.
+The default is 4.}
+
+\item{n.gens}{[\code{integer(1)}]\cr
+The number of generations (stopping condition).
+Defaults to 100.}
+
+\item{seed}{[\code{numeric(1)}]\cr
+Single numeric value in \eqn{[0,1]}.
+Defaults to a random number within the interval.}
+
+\item{envir}{[\code{environment}]\cr
+This parameter is required for calling R functions from C.
+Do not modify unless you know what you are doing!}
+}
+\value{
+[\code{List}] List with the following entries: ...
 }
 \description{
-...
+Simple interface to the C-implementation of the OmniOptimizer.
+}
+\examples{
+\dontrun{
+library(smoof)
+
+fn = smoof::makeDTLZ1Function(dimensions = 2L, n.objectives = 2L)
+fn = smoof::addLoggingWrapper(fn, logg.x = TRUE, logg.y = TRUE)
+
+set.seed(52357) # reproducibility
+res = omniopt(fn, pop.size = 20L, n.gens = 1000L)
+print(res)
+print(smoof::getLoggedValues(fn, compact = TRUE))
+plot(t(res$pareto.front))
+}
 }

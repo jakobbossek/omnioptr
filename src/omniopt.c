@@ -12,7 +12,7 @@
 
 #include "macros.h"
 
-SEXP omnioptC(SEXP fun, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP rho) {
+SEXP omnioptC(SEXP fun, SEXP nobjSEXP, SEXP nrealSEXP, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP seedSEXP, SEXP rho) {
     // Jakob: many thanks to https://ro-che.info/articles/2017-08-18-call-r-function-from-c
     // double tt[2] = {2, 3.1};
     // int size = 2;
@@ -31,24 +31,25 @@ SEXP omnioptC(SEXP fun, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP rho) {
 
     popsize = asInteger(popsizeSEXP); // population size (must be multiple of 4)
     ngen = asInteger(ngenSEXP); // number of generations (termination condition)
-    nobj = 2; // number of objectives
+    nobj = asInteger(nobjSEXP); // number of objectives
     ncon = 0; // number of constraints
-    nreal = 2; // number of real variables
+    nreal = asInteger(nrealSEXP); // number of real variables
     nbin = 0; // number of binary variables
 
-    seed = 0.5; // random number generator seed (real number in [0,1])
+    seed = asReal(seedSEXP); // random number generator seed (real number in [0,1])
 
     min_obj = (double *)malloc(nobj*sizeof(double));
     max_obj = (double *)malloc(nobj*sizeof(double));
     epsilon = (double *)malloc(nobj*sizeof(double));
 
     // box constraints for real variables
+    //FIXME: Jakob: hardcoded at the moment
     min_realvar = (double *)malloc(nreal*sizeof(double));
     max_realvar = (double *)malloc(nreal*sizeof(double));
     int i;
     for (i=0; i<nreal; i++) {
-      min_realvar[i] = -5;
-      max_realvar[i] = 5;
+      min_realvar[i] = 0;
+      max_realvar[i] = 1;
     }
 
 
@@ -212,7 +213,7 @@ SEXP omnioptC(SEXP fun, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP rho) {
 
       // debug
       for (int k = 0;  k < nobj; ++k) {
-        Rprintf("o%i: %.3f\n", k, REAL(retu)[k]);
+        Rprintf("O%i: %.3f\n", k, REAL(retu)[k]);
       }
 
       // update indiviual
@@ -276,7 +277,7 @@ SEXP omnioptC(SEXP fun, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP rho) {
 
               // debug
               for (int k = 0;  k < nobj; ++k) {
-                Rprintf("o%i: %.3f\n", k, REAL(retu)[k]);
+                Rprintf("O%i: %.3f\n", k, REAL(retu)[k]);
               }
 
               // update indiviual
@@ -317,14 +318,43 @@ SEXP omnioptC(SEXP fun, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP rho) {
     }
     free(s);
 
+    // Jakob: we need to construct a vector and convert to matrix in R
+    //FIXME: I guess parent_pop is what we need here
+    SEXP r_pareto_set = PROTECT(allocVector(REALSXP, nreal * popsize));
+    SEXP r_pareto_front = PROTECT(allocVector(REALSXP, nobj * popsize));
+
+    // Prepare Pareto-set approximation
+    int k = 0;
+    for (i = 0; i < popsize; ++i) {
+      for (int j = 0; j < nreal; ++j) {
+        REAL(r_pareto_set)[k] = parent_pop->ind[i].xreal[j];
+        ++k;
+      }
+    }
+
+    // Prepare Pareto-front approximation
+    k = 0;
+    for (i = 0; i < popsize; ++i) {
+      for (int j = 0; j < nobj; ++j) {
+        REAL(r_pareto_front)[k] = parent_pop->ind[i].obj[j];
+        ++k;
+      }
+    }
+
+    // Generate list to return both vectors simultaneously
+    SEXP rout = PROTECT(allocVector(VECSXP, 2));
+    SET_VECTOR_ELT(rout, 0, r_pareto_set);
+    SET_VECTOR_ELT(rout, 1, r_pareto_front);
+
+    // clean up
     deallocate_memory_pop (parent_pop, popsize);
     deallocate_memory_pop (child_pop, popsize);
-    deallocate_memory_pop (mixed_pop, 2*popsize);
+    deallocate_memory_pop (mixed_pop, 2 * popsize);
     free(parent_pop);
     free(child_pop);
     free(mixed_pop);
 
     Rprintf("\n Routine successfully exited \n");
-
-    return ScalarReal(10.0);
+    UNPROTECT(3);
+    return rout;
 }
