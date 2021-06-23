@@ -55,11 +55,11 @@ SEXP omnioptC(SEXP fun, SEXP nobjSEXP, SEXP nrealSEXP, SEXP popsizeSEXP, SEXP ng
 
     pcross_real = 0.5; // probability of crossover of real variable (0.6-1.0)
     pmut_real = 0.5; // probablity of mutation of real variables (1/nreal)  FIXME: 1/nreal should be default?
-    eta_c = 10; // value of distribution index for crossover (5-20)
-    eta_m = 10; // value of distribution index for mutation (5-50)
+    eta_c = 20; // value of distribution index for crossover (5-20)
+    eta_m = 20; // value of distribution index for mutation (5-50)
 
-    mate = 1; // choice for selection restriction, 0 for normal selection, 1 for restricted selection
-    delta = 0.5; // delta (0.0 - 1.0) for loose domination
+    mate = 0; // choice for selection restriction, 0 for normal selection, 1 for restricted selection
+    delta = 0.001; // delta (0.0 - 1.0) for loose domination
 
     var_option = 0; // variable space niching, 0 for NO, 1 for YES
     obj_option = 1; // objective space niching, 0 for NO, 1 for YES
