@@ -63,19 +63,19 @@ SEXP omnioptC(
       max_realvar[i] = REAL(max_realvarSEXP)[i];
     }
 
-    pcross_real = 0.5; // probability of crossover of real variable (0.6-1.0)
-    pmut_real = 0.5; // probablity of mutation of real variables (1/nreal)  FIXME: 1/nreal should be default?
-    eta_c = 20; // value of distribution index for crossover (5-20)
-    eta_m = 20; // value of distribution index for mutation (5-50)
+    pcross_real = asReal(pcross_realSEXP); // probability of crossover of real variable (0.6-1.0)
+    pmut_real = asReal(pmut_realSEXP); // probablity of mutation of real variables (1/nreal)  FIXME: 1/nreal should be default?
+    eta_c = asReal(eta_cSEXP); // value of distribution index for crossover (5-20)
+    eta_m = asReal(eta_mSEXP); // value of distribution index for mutation (5-50)
 
-    mate = 0; // choice for selection restriction, 0 for normal selection, 1 for restricted selection
-    delta = 0.001; // delta (0.0 - 1.0) for loose domination
+    mate = asInteger(mateSEXP); // choice for selection restriction, 0 for normal selection, 1 for restricted selection
+    delta = asReal(deltaSEXP); // delta (0.0 - 1.0) for loose domination
 
-    var_option = 0; // variable space niching, 0 for NO, 1 for YES
-    obj_option = 1; // objective space niching, 0 for NO, 1 for YES
+    var_option = asInteger(var_optionSEXP); // variable space niching, 0 for NO, 1 for YES
+    obj_option = asInteger(obj_optionSEXP); // objective space niching, 0 for NO, 1 for YES
 
-    input_type = 0; // choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, 2 for reading initial population from a file
-    frequency = 1; // frequency with which the population information (only the variables) is to be stored
+    input_type = asInteger(input_typeSEXP); // choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, 2 for reading initial population from a file
+    frequency = asInteger(frequencySEXP); // frequency with which the population information (only the variables) is to be stored
 
     char *s;
     population *parent_pop;
