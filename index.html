@@ -84,39 +84,39 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(omnioptr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(smoof)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Single-Objective Example (see reference (2), Section 4.2)</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># ===</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>fn =<span class="st"> </span>smoof<span class="op">::</span><span class="kw">makeHimmelblauFunction</span>()</span>
-<span id="cb1-9"><a href="#cb1-9"></a>res =<span class="st"> </span><span class="kw">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dt">var.space.niching =</span> <span class="ot">TRUE</span>, <span class="dt">delta =</span> <span class="fl">0.001</span>,</span>
-<span id="cb1-10"><a href="#cb1-10"></a>  <span class="dt">verbose =</span> <span class="ot">FALSE</span> <span class="dt">envir =</span> <span class="kw">environment</span>())</span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># final points in decision space</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">plot</span>(fn)</span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">points</span>(<span class="kw">t</span>(res<span class="op">$</span>dec))</span>
-<span id="cb1-15"><a href="#cb1-15"></a></span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="co"># visualization of progress</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(res<span class="op">$</span>history)) {</span>
-<span id="cb1-18"><a href="#cb1-18"></a>  e =<span class="st"> </span>res<span class="op">$</span>history[[i]]</span>
-<span id="cb1-19"><a href="#cb1-19"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(e))</span>
-<span id="cb1-20"><a href="#cb1-20"></a>    <span class="cf">next</span></span>
-<span id="cb1-21"><a href="#cb1-21"></a>  <span class="kw">plot</span>(fn, <span class="dt">main =</span> <span class="kw">sprintf</span>(<span class="st">"Iteration %i"</span>, i))</span>
-<span id="cb1-22"><a href="#cb1-22"></a>  <span class="kw">points</span>(<span class="kw">t</span>(e<span class="op">$</span>dec))</span>
-<span id="cb1-23"><a href="#cb1-23"></a>  <span class="kw">Sys.sleep</span>(<span class="fl">0.1</span>)</span>
-<span id="cb1-24"><a href="#cb1-24"></a>}</span>
-<span id="cb1-25"><a href="#cb1-25"></a></span>
-<span id="cb1-26"><a href="#cb1-26"></a><span class="co"># Multi-Objective Example</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a><span class="co"># ===</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a></span>
-<span id="cb1-29"><a href="#cb1-29"></a><span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
-<span id="cb1-30"><a href="#cb1-30"></a>fn =<span class="st"> </span>smoof<span class="op">::</span><span class="kw">makeZDT2Function</span>(<span class="dt">dimension =</span> 4L)</span>
-<span id="cb1-31"><a href="#cb1-31"></a>res =<span class="st"> </span><span class="kw">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dt">p.cross =</span> <span class="fl">0.9</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb1-32"><a href="#cb1-32"></a><span class="kw">plot</span>(<span class="kw">t</span>(res<span class="op">$</span>obj))</span>
-<span id="cb1-33"><a href="#cb1-33"></a><span class="kw">pairs</span>(<span class="kw">t</span>(res<span class="op">$</span>dec))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jakobbossek/omnioptr">omnioptr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jakobbossek/smoof">smoof</a></span><span class="op">)</span>
+
+<span class="co"># Single-Objective Example (see reference (2), Section 4.2)</span>
+<span class="co"># ===</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="co"># reproducibility</span>
+<span class="va">fn</span> <span class="op">=</span> <span class="fu">smoof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smoof/man/makeHimmelblauFunction.html">makeHimmelblauFunction</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="reference/omniopt.html">omniopt</a></span><span class="op">(</span><span class="va">fn</span>, <span class="fl">100</span>, <span class="fl">200</span>, var.space.niching <span class="op">=</span> <span class="cn">TRUE</span>, delta <span class="op">=</span> <span class="fl">0.001</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="co"># final points in decision space</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fn</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dec</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># visualization of progress</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">history</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">e</span> <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">history</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span>
+    <span class="kw">next</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fn</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"Iteration %i"</span>, <span class="va">i</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html">points</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">dec</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="co"># Multi-Objective Example</span>
+<span class="co"># ===</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="co"># reproducibility</span>
+<span class="va">fn</span> <span class="op">=</span> <span class="fu">smoof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smoof/man/makeZDT2Function.html">makeZDT2Function</a></span><span class="op">(</span>dimension <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="reference/omniopt.html">omniopt</a></span><span class="op">(</span><span class="va">fn</span>, <span class="fl">100</span>, <span class="fl">1000</span>, p.cross <span class="op">=</span> <span class="fl">0.9</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">obj</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/pairs.html">pairs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">dec</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="installation-instructions" class="section level2">
 <h2 class="hasAnchor">
