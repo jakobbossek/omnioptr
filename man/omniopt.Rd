@@ -8,6 +8,16 @@ omniopt(
   fn,
   pop.size = 4L,
   n.gens = 100L,
+  p.cross = 0.6,
+  p.mut = 1/smoof::getNumberOfParameters(fn),
+  eta.cross = 20L,
+  eta.mut = 20L,
+  mate = "normal",
+  delta = 0.001,
+  var.space.niching = FALSE,
+  obj.space.niching = TRUE,
+  init = "random",
+  frequency = 1,
   seed = runif(1),
   envir = environment()
 )
@@ -24,16 +34,67 @@ The default is 4.}
 The number of generations (stopping condition).
 Defaults to 100.}
 
+\item{p.cross}{[\code{numeric(1)}]\cr
+Probability of crossover (within \eqn{[0.6, 1.0]}).
+Defaults to 0.6.}
+
+\item{p.mut}{[\code{numeric(1)}]\cr
+Probablity of mutation (within \eqn{[0,1]}).
+Default to \eqn{1/n} where \eqn{n} is the number of decision variables of
+\code{fn}.}
+
+\item{eta.cross}{[\code{integer(1)}]\cr
+Value of distribution index for crossover in \eqn{\{5, \ldots, 20\}}.
+Default is 20.}
+
+\item{eta.mut}{[\code{integer(1)}]\cr
+Value of distribution index for mutation in \eqn{\{5, \ldots, 50\}}.
+Default is 20.}
+
+\item{mate}{[\code{character(1)}]\cr
+Choice for selection restriction. Either \dQuote{normal} for normal selection
+or \dQuote{restricted} for restricted selection.}
+
+\item{delta}{[\code{numeric(1)}]\cr
+Value \eqn{\delta \in (0.0,1.0)} for loose domination.
+Default is \eqn{0.001}.}
+
+\item{var.space.niching}{[\code{logical(1)}]\cr
+Use variable space niching?
+Default is \code{FALSE}.
+Note that at least on of \code{var.space.niching} or \code{obj.space.niching}
+must be \code{TRUE}.}
+
+\item{obj.space.niching}{[\code{logical(1)}]\cr
+Use objective space niching?
+Default is \code{TRUE}.
+Note that at least on of \code{var.space.niching} or \code{obj.space.niching}
+must be \code{TRUE}.}
+
+\item{init}{[\code{character(1)}]\cr
+This parameter determines how to initialize the  population: \dQuote{random}
+(the default) for uniform random generation and \dQuote{lhs} for
+Latin-Hypercube-Sampling (LHS).}
+
+\item{frequency}{[\code{integer(1)}]\cr
+Frequency with which the population information is to be stored.
+Defaults to 1.}
+
 \item{seed}{[\code{numeric(1)}]\cr
 Single numeric value in \eqn{[0,1]}.
-Defaults to a random number within the interval.}
+Defaults to a random number within this interval.}
 
 \item{envir}{[\code{environment}]\cr
 This parameter is required for calling R functions from C.
-Do not modify unless you know what you are doing!}
+Do not change the default unless you know what you are doing!}
 }
 \value{
-[\code{List}] List with the following entries: ...
+[\code{List}] List with the following entries:
+\describe{
+  \item{pareto.set}{Matrix of non-dominated points (each column is a point).}
+  \item{pareto.front}{Matrix of non-dominated point objective values
+  (each column is a point).}
+}
 }
 \description{
 Simple interface to the C-implementation of the OmniOptimizer.

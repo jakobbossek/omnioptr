@@ -12,30 +12,39 @@
 
 #include "macros.h"
 
-SEXP omnioptC(SEXP fun, SEXP nobjSEXP, SEXP nrealSEXP, SEXP popsizeSEXP, SEXP ngenSEXP, SEXP seedSEXP, SEXP rho) {
-    // Jakob: many thanks to https://ro-che.info/articles/2017-08-18-call-r-function-from-c
-    // double tt[2] = {2, 3.1};
-    // int size = 2;
-    // SEXP ttr = PROTECT(allocVector(REALSXP, size));
-    // for (int i = 0; i < 2; ++i) {
-    //   REAL(ttr)[i] = tt[i];
-    // }
-    // Rprintf( "Program starting...\n" );
-    // SEXP call = PROTECT(LCONS(fun, LCONS(ttr, R_NilValue)));
-    // Rprintf( "Created call...\n" );
-    // SEXP val = R_forceAndCall(call, 1, rho);
-    // Rprintf( "Program running...\n" );
-    // UNPROTECT(2);
-    // return val;
-    // return ScalarReal(10);
+SEXP omnioptC(
+  SEXP fun, // smoof function
+  SEXP nobjSEXP, // (integer) number of objectives
+  SEXP nrealSEXP, // (integer) number of input dimensions (decision space)
+  SEXP popsizeSEXP, // (integer) population size
+  SEXP ngenSEXP, // (integer) number of generations
+  SEXP pcross_realSEXP, // (double) probability of crossover
+  SEXP pmut_realSEXP, // (double) probablity of mutation of real variables (1/nreal)
+  SEXP eta_cSEXP, // (double) value of distribution index for crossover (5-20)
+  SEXP eta_mSEXP, // (double) value of distribution index for mutation (5-50)
+  SEXP mateSEXP, // (integer) choice for selection restriction, 0 for normal selection, 1 for restricted selection
+  SEXP deltaSEXP, // (double) delta (0.0 - 1.0) for loose domination
+  SEXP var_optionSEXP, // (integer) variable space niching, 0 for NO, 1 for YES
+  SEXP obj_optionSEXP, // (integer) objective space niching, 0 for NO, 1 for YES
+  SEXP input_typeSEXP, // (integer) choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, [JAKOB]: unsupoported third option: 2 for reading initial population from a file
+  SEXP frequencySEXP, // frequency with which the population information (only the variables) is to be stored
+  SEXP seedSEXP, // (double) RNG seed in (0,1)
+  SEXP rho) // (environment) used for calling R smoof function from C
+{
 
     popsize = asInteger(popsizeSEXP); // population size (must be multiple of 4)
     ngen = asInteger(ngenSEXP); // number of generations (termination condition)
     nobj = asInteger(nobjSEXP); // number of objectives
-    ncon = 0; // number of constraints
     nreal = asInteger(nrealSEXP); // number of real variables
+
+    //FIXME: Jakob: currently we support only continuous functions
+    ncon = 0; // number of constraints
     nbin = 0; // number of binary variables
 
+    // Jakob:  there is no analysis mode from R
+    run_mode = 1; // simulation mode, 0 for Analysis mode, 1 for Turbo mode
+
+    // RNG seed
     seed = asReal(seedSEXP); // random number generator seed (real number in [0,1])
 
     min_obj = (double *)malloc(nobj*sizeof(double));
@@ -52,7 +61,6 @@ SEXP omnioptC(SEXP fun, SEXP nobjSEXP, SEXP nrealSEXP, SEXP popsizeSEXP, SEXP ng
       max_realvar[i] = 1;
     }
 
-
     pcross_real = 0.5; // probability of crossover of real variable (0.6-1.0)
     pmut_real = 0.5; // probablity of mutation of real variables (1/nreal)  FIXME: 1/nreal should be default?
     eta_c = 20; // value of distribution index for crossover (5-20)
@@ -66,105 +74,104 @@ SEXP omnioptC(SEXP fun, SEXP nobjSEXP, SEXP nrealSEXP, SEXP popsizeSEXP, SEXP ng
 
     input_type = 0; // choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, 2 for reading initial population from a file
     frequency = 1; // frequency with which the population information (only the variables) is to be stored
-    run_mode = 1; // simulation mode, 0 for Analysis mode, 1 for Turbo mode
 
-    // Jakob: do all these sanity checks (essentially taken from src/input.c)
-    if (popsize<4 || (popsize%4)!= 0) {
-        Rprintf("\n population size read is : %d",popsize);
-        Rprintf("\n Wrong population size entered, hence exiting \n");
-        exit (1);
-    }
-    if (ngen<1) {
-        Rprintf("\n number of generations read is : %d",ngen);
-        Rprintf("\n Wrong nuber of generations entered, hence exiting \n");
-        exit (1);
-    }
-    if (nobj<1) {
-        Rprintf("\n number of objectives entered is : %d",nobj);
-        Rprintf("\n Wrong number of objectives entered, hence exiting \n");
-        exit (1);
-    }
-    if (ncon<0) {
-        Rprintf("\n number of constraints entered is : %d",ncon);
-        Rprintf("\n Wrong number of constraints enetered, hence exiting \n");
-        exit (1);
-    }
-    if (nreal<0) {
-        Rprintf("\n number of real variables entered is : %d",nreal);
-        Rprintf("\n Wrong number of variables entered, hence exiting \n");
-        exit (1);
-    }
-    if (nreal != 0) {
-        if (pcross_real<0.0 || pcross_real>1.0)
-        {
-            Rprintf("\n Probability of crossover entered is : %e",pcross_real);
-            Rprintf("\n Entered value of probability of crossover of real variables is out of bounds, hence exiting \n");
-            exit (1);
-        }
-        if (pmut_real<0.0 || pmut_real>1.0)
-        {
-            Rprintf("\n Probability of mutation entered is : %e",pmut_real);
-            Rprintf("\n Entered value of probability of mutation of real variables is out of bounds, hence exiting \n");
-            exit (1);
-        }
-        if (eta_c<=0)
-        {
-            Rprintf("\n The value entered is : %e",eta_c);
-            Rprintf("\n Wrong value of distribution index for crossover entered, hence exiting \n");
-            exit (1);
-        }
-        // Rprintf ("\n Enter the value of distribution index for mutation (5-50): ");
-        // scanf ("%lf",&eta_m);
-        if (eta_m<=0)
-        {
-            Rprintf("\n The value entered is : %e",eta_m);
-            Rprintf("\n Wrong value of distribution index for mutation entered, hence exiting \n");
-            exit (1);
-        }
-    }
-    if (nreal==0 && nbin==0) {
-        Rprintf("\n Number of real as well as binary variables, both are zero, hence exiting \n");
-        exit(1);
-    }
-    if (mate!=0 && mate!=1) {
-        Rprintf("\n Selection restriction option read as : %d",mate);
-        Rprintf("\n Wrong choice entered for selection restriction, hence exiting \n");
-        exit(1);
-    }
+    // // Jakob: do all these sanity checks (essentially taken from src/input.c)
+    // if (popsize<4 || (popsize%4)!= 0) {
+    //     Rprintf("\n population size read is : %d",popsize);
+    //     Rprintf("\n Wrong population size entered, hence exiting \n");
+    //     exit (1);
+    // }
+    // if (ngen<1) {
+    //     Rprintf("\n number of generations read is : %d",ngen);
+    //     Rprintf("\n Wrong nuber of generations entered, hence exiting \n");
+    //     exit (1);
+    // }
+    // if (nobj<1) {
+    //     Rprintf("\n number of objectives entered is : %d",nobj);
+    //     Rprintf("\n Wrong number of objectives entered, hence exiting \n");
+    //     exit (1);
+    // }
+    // if (ncon<0) {
+    //     Rprintf("\n number of constraints entered is : %d",ncon);
+    //     Rprintf("\n Wrong number of constraints enetered, hence exiting \n");
+    //     exit (1);
+    // }
+    // if (nreal<0) {
+    //     Rprintf("\n number of real variables entered is : %d",nreal);
+    //     Rprintf("\n Wrong number of variables entered, hence exiting \n");
+    //     exit (1);
+    // }
+    // if (nreal != 0) {
+    //     if (pcross_real<0.0 || pcross_real>1.0)
+    //     {
+    //         Rprintf("\n Probability of crossover entered is : %e",pcross_real);
+    //         Rprintf("\n Entered value of probability of crossover of real variables is out of bounds, hence exiting \n");
+    //         exit (1);
+    //     }
+    //     if (pmut_real<0.0 || pmut_real>1.0)
+    //     {
+    //         Rprintf("\n Probability of mutation entered is : %e",pmut_real);
+    //         Rprintf("\n Entered value of probability of mutation of real variables is out of bounds, hence exiting \n");
+    //         exit (1);
+    //     }
+    //     if (eta_c<=0)
+    //     {
+    //         Rprintf("\n The value entered is : %e",eta_c);
+    //         Rprintf("\n Wrong value of distribution index for crossover entered, hence exiting \n");
+    //         exit (1);
+    //     }
+    //     // Rprintf ("\n Enter the value of distribution index for mutation (5-50): ");
+    //     // scanf ("%lf",&eta_m);
+    //     if (eta_m<=0)
+    //     {
+    //         Rprintf("\n The value entered is : %e",eta_m);
+    //         Rprintf("\n Wrong value of distribution index for mutation entered, hence exiting \n");
+    //         exit (1);
+    //     }
+    // }
+    // if (nreal==0 && nbin==0) {
+    //     Rprintf("\n Number of real as well as binary variables, both are zero, hence exiting \n");
+    //     exit(1);
+    // }
+    // if (mate!=0 && mate!=1) {
+    //     Rprintf("\n Selection restriction option read as : %d",mate);
+    //     Rprintf("\n Wrong choice entered for selection restriction, hence exiting \n");
+    //     exit(1);
+    // }
 
-    if (delta<0.0 || delta>1.0) {
-        Rprintf("\n Wrong value entered for delta for loose domination, the value read was : %e",delta);
-        Rprintf("\n Exiting \n");
-        exit(1);
-    }
-    if (var_option!=0 && var_option!=1) {
-        Rprintf("\n The choice read for variable space niching is %d",var_option);
-        Rprintf("\n Wrong choice entered, hence exiting \n");
-    }
-    if (obj_option!=0 && obj_option!=1) {
-        Rprintf("\n The choice read for objective space niching is %d",obj_option);
-        Rprintf("\n Wrong choice entered, hence exiting \n");
-        exit(1);
-    }
-    if (var_option==0 && obj_option==0) {
-        Rprintf("\n Both variable and objective space niching cannot be zero, exiting\n");
-        exit(1);
-    }
-    if (input_type!=0 && input_type!=1 && input_type!=2) {
-        Rprintf("\n Wrong choice entered for population initialization, choice entered was %d",input_type);
-        Rprintf("\n Exiting \n");
-        exit(1);
-    }
-    if (frequency<1 || frequency>ngen) {
-        Rprintf("\n Wrong value of frequency entered, the value read is : %d",frequency);
-        Rprintf("\n It should be in the range (1 - pop_size), exiting \n");
-        exit(1);
-    }
-    if (run_mode!=0 && run_mode!=1) {
-        Rprintf("\n Value read for simulation mode is : %d",run_mode);
-        Rprintf("\n Wrong value entered, hence exiting \n");
-        exit(1);
-    }
+    // if (delta<0.0 || delta>1.0) {
+    //     Rprintf("\n Wrong value entered for delta for loose domination, the value read was : %e",delta);
+    //     Rprintf("\n Exiting \n");
+    //     exit(1);
+    // }
+    // if (var_option!=0 && var_option!=1) {
+    //     Rprintf("\n The choice read for variable space niching is %d",var_option);
+    //     Rprintf("\n Wrong choice entered, hence exiting \n");
+    // }
+    // if (obj_option!=0 && obj_option!=1) {
+    //     Rprintf("\n The choice read for objective space niching is %d",obj_option);
+    //     Rprintf("\n Wrong choice entered, hence exiting \n");
+    //     exit(1);
+    // }
+    // if (var_option==0 && obj_option==0) {
+    //     Rprintf("\n Both variable and objective space niching cannot be zero, exiting\n");
+    //     exit(1);
+    // }
+    // if (input_type!=0 && input_type!=1 && input_type!=2) {
+    //     Rprintf("\n Wrong choice entered for population initialization, choice entered was %d",input_type);
+    //     Rprintf("\n Exiting \n");
+    //     exit(1);
+    // }
+    // if (frequency<1 || frequency>ngen) {
+    //     Rprintf("\n Wrong value of frequency entered, the value read is : %d",frequency);
+    //     Rprintf("\n It should be in the range (1 - pop_size), exiting \n");
+    //     exit(1);
+    // }
+    // if (run_mode!=0 && run_mode!=1) {
+    //     Rprintf("\n Value read for simulation mode is : %d",run_mode);
+    //     Rprintf("\n Wrong value entered, hence exiting \n");
+    //     exit(1);
+    // }
 
     char *s;
     population *parent_pop;
