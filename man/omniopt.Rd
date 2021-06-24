@@ -118,17 +118,30 @@ The original C-code can be found at the
 \href{http://www.coin-lab.org/content/source_codes.html}{COIN laboratory website}.
 }
 \examples{
-\dontrun{
 library(smoof)
 
-fn = smoof::makeDTLZ1Function(dimensions = 2L, n.objectives = 2L)
-fn = smoof::addLoggingWrapper(fn, logg.x = TRUE, logg.y = TRUE)
+# Single-Objective Example (see reference [2], Section 4.2)
+# ===
 
-set.seed(52357) # reproducibility
-res = omniopt(fn, pop.size = 20L, n.gens = 1000L)
-print(res)
-print(smoof::getLoggedValues(fn, compact = TRUE))
+set.seed(1) # reproducibility
+fn = smoof::makeHimmelblauFunction()
+res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001,
+  verbose = FALSE)
+
+\dontrun{
+plot(fn)
+points(t(res$pareto.set))
+}
+
+# Multi-Objective Example
+# ===
+
+set.seed(1) # reproducibility
+fn = smoof::makeZDT2Function(dimension = 4L)
+res = omniopt(fn, 100, 1000, p.cross = 0.9, verbose = FALSE)
+\dontrun{
 plot(t(res$pareto.front))
+pairs(t(res$pareto.set))
 }
 }
 \references{

@@ -87,17 +87,30 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' library(smoof)
 #'
-#' fn = smoof::makeDTLZ1Function(dimensions = 2L, n.objectives = 2L)
-#' fn = smoof::addLoggingWrapper(fn, logg.x = TRUE, logg.y = TRUE)
+#' # Single-Objective Example (see reference [2], Section 4.2)
+#' # ===
 #'
-#' set.seed(52357) # reproducibility
-#' res = omniopt(fn, pop.size = 20L, n.gens = 1000L)
-#' print(res)
-#' print(smoof::getLoggedValues(fn, compact = TRUE))
+#' set.seed(1) # reproducibility
+#' fn = smoof::makeHimmelblauFunction()
+#' res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001,
+#'   verbose = FALSE)
+#'
+#' \dontrun{
+#' plot(fn)
+#' points(t(res$pareto.set))
+#' }
+#'
+#' # Multi-Objective Example
+#' # ===
+#'
+#' set.seed(1) # reproducibility
+#' fn = smoof::makeZDT2Function(dimension = 4L)
+#' res = omniopt(fn, 100, 1000, p.cross = 0.9, verbose = FALSE)
+#' \dontrun{
 #' plot(t(res$pareto.front))
+#' pairs(t(res$pareto.set))
 #' }
 #' @export
 omniopt = function(
@@ -120,7 +133,7 @@ omniopt = function(
 
   checkmate::assert_class(fn, "smoof_function")
   pop.size = checkmate::asInt(pop.size, lower = 4L)
-  if (pop.size<4 || (pop.size %% 4) != 0) {
+  if (pop.size < 4 || (pop.size %% 4) != 0) {
     stop("[omniopt] pop.size needs to be at least 4 and a multiple of 4.\n")
   }
   n.gens = checkmate::asInt(n.gens, lower = 1L)

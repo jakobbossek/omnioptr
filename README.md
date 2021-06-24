@@ -14,16 +14,16 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 ## Introduction
 
 Simple interface to the C-implementation of the Omni-optimizer by Deb
-and Tiwari \[1,2\]. The algorithm “is designed as a generic
-multi-objective, multi-optima optimizer” \[2\].
+and Tiwari (1,2). The algorithm “is designed as a generic
+multi-objective, multi-optima optimizer” (2).
 
-\[1\] Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: *A generic
-evolutionary algorithm for single and multi-objective optimization*.
-European Journal of Operations Research 185(3): 1062-1087.
+1.  Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: *A generic
+    evolutionary algorithm for single and multi-objective optimization*.
+    European Journal of Operations Research 185(3): 1062-1087.
 
-\[2\] Kalyanmoy Deb, Santosh Tiwari: *Omni-optimizer: A Procedure for
-Single and Multi-objective Optimization*. In: Proceedings of the
-Evolutionary Multi-Criterion Conference (EMO) 2005: 47-61.s
+2.  Kalyanmoy Deb, Santosh Tiwari: *Omni-optimizer: A Procedure for
+    Single and Multi-objective Optimization*. In: Proceedings of the
+    Evolutionary Multi-Criterion Conference (EMO) 2005: 47-61.s
 
 ## Example
 
@@ -31,14 +31,25 @@ Evolutionary Multi-Criterion Conference (EMO) 2005: 47-61.s
 library(omnioptr)
 library(smoof)
 
-fn = smoof::makeDTLZ1Function(dimensions = 2L, n.objectives = 2L)
-fn = smoof::addLoggingWrapper(fn, logg.x = TRUE, logg.y = TRUE)
+# Single-Objective Example (see reference (2), Section 4.2)
+# ===
 
-set.seed(52357) # reproducibility
-res = omniopt(fn, pop.size = 20L, n.gens = 100L)
-print(res)
-print(smoof::getLoggedValues(fn, compact = TRUE))
+set.seed(1) # reproducibility
+fn = smoof::makeHimmelblauFunction()
+res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001,
+  verbose = FALSE envir = environment())
+
+plot(fn)
+points(t(res$pareto.set))
+
+# Multi-Objective Example
+# ===
+
+set.seed(1) # reproducibility
+fn = smoof::makeZDT2Function(dimension = 4L)
+res = omniopt(fn, 100, 1000, p.cross = 0.9, verbose = FALSE)
 plot(t(res$pareto.front))
+pairs(t(res$pareto.set))
 ```
 
 ## Installation Instructions
