@@ -11,18 +11,32 @@ test_that("omnioptr::omniopt produces correct outpur", {
   for (f in funs) {
     d = smoof::getNumberOfParameters(f)
     o = smoof::getNumberOfObjectives(f)
-    res = omniopt(f, pop.size = pop.size, n.gens = 200L)
-    checkmate::expect_list(res)
-    checkmate::expect_matrix(res$pareto.set, nrows = d, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
-    checkmate::expect_matrix(res$pareto.front, nrows = o, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
 
-    # check whether fitness values of individuals match the smoof-output
-    expect_true(all(res$pareto.front == apply(res$pareto.set, 2L, f)))
+    for (obj.space.niching in c(TRUE, FALSE)) {
+      for (var.space.niching in c(TRUE, FALSE)) {
+        # at least one of these must be TRUE
+        if (!(var.space.niching || obj.space.niching))
+          next
+        for (mate in c("normal", "restricted")) {
+          res = omniopt(f, pop.size = pop.size, n.gens = 100L,
+            obj.space.niching = obj.space.niching,
+            var.space.niching = var.space.niching,
+            mate = mate,
+            verbose = FALSE)
+          checkmate::expect_list(res)
+          checkmate::expect_matrix(res$pareto.set, nrows = d, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
+          checkmate::expect_matrix(res$pareto.front, nrows = o, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
 
-    # check if individuals respect box-constraints
-    lower = smoof::getLowerBoxConstraints(f)
-    upper = smoof::getUpperBoxConstraints(f)
+          # check whether fitness values of individuals match the smoof-output
+          expect_true(all(res$pareto.front == apply(res$pareto.set, 2L, f)))
 
-    expect_true(all(apply(res$pareto.set, 2L, function(e) { all((e >= lower) & (e <= upper))})))
+          # check if individuals respect box-constraints
+          lower = smoof::getLowerBoxConstraints(f)
+          upper = smoof::getUpperBoxConstraints(f)
+
+          expect_true(all(apply(res$pareto.set, 2L, function(e) { all((e >= lower) & (e <= upper))})))
+        }
+      }
+    }
   }
 })
