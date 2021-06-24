@@ -3,6 +3,9 @@ output: github_document
 ---
 # omnioptr: Interface to OmniOptimizer
 
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/jakobbossek/omnioptr/workflows/R-CMD-check/badge.svg)](https://github.com/jakobbossek/omnioptr/actions)
+  <!-- badges: end -->
 
 ## Introduction
 

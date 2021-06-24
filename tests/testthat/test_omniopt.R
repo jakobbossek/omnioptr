@@ -4,8 +4,7 @@ test_that("omnioptr::omniopt produces correct outpur", {
   # test functions
   funs = c(
     smoof::makeZDT1Function(dimension = 2L),
-    smoof::makeZDT2Function(dimension = 4L),
-    smoof::makeMMF6Function()
+    smoof::makeZDT2Function(dimension = 4L)
   )
   pop.size = 100L
 
