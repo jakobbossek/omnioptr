@@ -9,8 +9,6 @@
 #include "global.h"
 #include "rand.h"
 
-#include "macros.h"
-
 SEXP omnioptC(
   SEXP fun, // smoof function
   SEXP nobjSEXP, // (integer) number of objectives
@@ -30,6 +28,7 @@ SEXP omnioptC(
   SEXP input_typeSEXP, // (integer) choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, [JAKOB]: unsupoported third option: 2 for reading initial population from a file
   SEXP frequencySEXP, // frequency with which the population information (only the variables) is to be stored
   SEXP seedSEXP, // (double) RNG seed in (0,1)
+  SEXP verboseSEXP, // (integer) print messages? (0 or 1)
   SEXP rho) // (environment) used for calling R smoof function from C
 {
 
@@ -48,12 +47,14 @@ SEXP omnioptC(
     // RNG seed
     seed = asReal(seedSEXP); // random number generator seed (real number in [0,1])
 
+    // be verbose?
+    int verbose = asInteger(verboseSEXP);
+
     min_obj = (double *)malloc(nobj*sizeof(double));
     max_obj = (double *)malloc(nobj*sizeof(double));
     epsilon = (double *)malloc(nobj*sizeof(double));
 
     // box constraints for real variables
-    //FIXME: Jakob: hardcoded at the moment
     min_realvar = (double *)malloc(nreal*sizeof(double));
     max_realvar = (double *)malloc(nreal*sizeof(double));
     int i;
@@ -76,109 +77,6 @@ SEXP omnioptC(
     input_type = 0; // choice for population initialization, 0 for random, 1 for latin-hypercube based sampling, 2 for reading initial population from a file
     frequency = 1; // frequency with which the population information (only the variables) is to be stored
 
-    // // Jakob: do all these sanity checks (essentially taken from src/input.c)
-    // if (popsize<4 || (popsize%4)!= 0) {
-    //     Rprintf("\n population size read is : %d",popsize);
-    //     Rprintf("\n Wrong population size entered, hence exiting \n");
-    //     exit (1);
-    // }
-    // if (ngen<1) {
-    //     Rprintf("\n number of generations read is : %d",ngen);
-    //     Rprintf("\n Wrong nuber of generations entered, hence exiting \n");
-    //     exit (1);
-    // }
-    // if (nobj<1) {
-    //     Rprintf("\n number of objectives entered is : %d",nobj);
-    //     Rprintf("\n Wrong number of objectives entered, hence exiting \n");
-    //     exit (1);
-    // }
-    // if (ncon<0) {
-    //     Rprintf("\n number of constraints entered is : %d",ncon);
-    //     Rprintf("\n Wrong number of constraints enetered, hence exiting \n");
-    //     exit (1);
-    // }
-    // if (nreal<0) {
-    //     Rprintf("\n number of real variables entered is : %d",nreal);
-    //     Rprintf("\n Wrong number of variables entered, hence exiting \n");
-    //     exit (1);
-    // }
-    // if (nreal != 0) {
-    //     if (pcross_real<0.0 || pcross_real>1.0)
-    //     {
-    //         Rprintf("\n Probability of crossover entered is : %e",pcross_real);
-    //         Rprintf("\n Entered value of probability of crossover of real variables is out of bounds, hence exiting \n");
-    //         exit (1);
-    //     }
-    //     if (pmut_real<0.0 || pmut_real>1.0)
-    //     {
-    //         Rprintf("\n Probability of mutation entered is : %e",pmut_real);
-    //         Rprintf("\n Entered value of probability of mutation of real variables is out of bounds, hence exiting \n");
-    //         exit (1);
-    //     }
-    //     if (eta_c<=0)
-    //     {
-    //         Rprintf("\n The value entered is : %e",eta_c);
-    //         Rprintf("\n Wrong value of distribution index for crossover entered, hence exiting \n");
-    //         exit (1);
-    //     }
-    //     // Rprintf ("\n Enter the value of distribution index for mutation (5-50): ");
-    //     // scanf ("%lf",&eta_m);
-    //     if (eta_m<=0)
-    //     {
-    //         Rprintf("\n The value entered is : %e",eta_m);
-    //         Rprintf("\n Wrong value of distribution index for mutation entered, hence exiting \n");
-    //         exit (1);
-    //     }
-    // }
-    // if (nreal==0 && nbin==0) {
-    //     Rprintf("\n Number of real as well as binary variables, both are zero, hence exiting \n");
-    //     exit(1);
-    // }
-    // if (mate!=0 && mate!=1) {
-    //     Rprintf("\n Selection restriction option read as : %d",mate);
-    //     Rprintf("\n Wrong choice entered for selection restriction, hence exiting \n");
-    //     exit(1);
-    // }
-
-    // if (delta<0.0 || delta>1.0) {
-    //     Rprintf("\n Wrong value entered for delta for loose domination, the value read was : %e",delta);
-    //     Rprintf("\n Exiting \n");
-    //     exit(1);
-    // }
-    // if (var_option!=0 && var_option!=1) {
-    //     Rprintf("\n The choice read for variable space niching is %d",var_option);
-    //     Rprintf("\n Wrong choice entered, hence exiting \n");
-    // }
-    // if (obj_option!=0 && obj_option!=1) {
-    //     Rprintf("\n The choice read for objective space niching is %d",obj_option);
-    //     Rprintf("\n Wrong choice entered, hence exiting \n");
-    //     exit(1);
-    // }
-    // if (var_option==0 && obj_option==0) {
-    //     Rprintf("\n Both variable and objective space niching cannot be zero, exiting\n");
-    //     exit(1);
-    // }
-    // if (input_type!=0 && input_type!=1 && input_type!=2) {
-    //     Rprintf("\n Wrong choice entered for population initialization, choice entered was %d",input_type);
-    //     Rprintf("\n Exiting \n");
-    //     exit(1);
-    // }
-    // if (frequency<1 || frequency>ngen) {
-    //     Rprintf("\n Wrong value of frequency entered, the value read is : %d",frequency);
-    //     Rprintf("\n It should be in the range (1 - pop_size), exiting \n");
-    //     exit(1);
-    // }
-    // if (run_mode!=0 && run_mode!=1) {
-    //     Rprintf("\n Value read for simulation mode is : %d",run_mode);
-    //     Rprintf("\n Wrong value entered, hence exiting \n");
-    //     exit(1);
-    // }
-    // if (seed<=0.0 || seed>=1.0)
-    // {
-    //     Rprintf("\n Entered seed value is wrong, seed value must be in (0,1) \n");
-    //     exit(1);
-    // }
-
     char *s;
     population *parent_pop;
     population *child_pop;
@@ -196,7 +94,12 @@ SEXP omnioptC(
     randomize();
     initialize_pop (parent_pop);
     decode_pop(parent_pop);
-    Rprintf("Initialization done, now performing first generation.\n");
+
+    if (verbose == 1) {
+      Rprintf("Omni-Optimizer (nreal: %i, nobj: %i)\n", nreal, nobj);
+      Rprintf("Population size: %i\n", popsize);
+      Rprintf("Nr. of generations: %i\n", ngen);
+    }
 
     // <Jakob-start>
     // Many thanks to: https://ro-che.info/articles/2017-08-18-call-r-function-from-c
@@ -212,18 +115,8 @@ SEXP omnioptC(
         REAL(xrealr)[k] = xreal[k];
       }
 
-      // debug
-      for (int k = 0; k < nreal; ++k) {
-        Rprintf("%.2f\n", REAL(xrealr)[k]);
-      }
-
       SEXP call = PROTECT(LCONS(fun, LCONS(xrealr, R_NilValue)));
       SEXP retu = R_forceAndCall(call, 1, rho);
-
-      // debug
-      for (int k = 0;  k < nobj; ++k) {
-        Rprintf("O%i: %.3f\n", k, REAL(retu)[k]);
-      }
 
       // update indiviual
       for (int j = 0; j < nobj; ++j) {
@@ -244,7 +137,6 @@ SEXP omnioptC(
 
     if (ngen==1)
     {
-    // Jakob: we do not need this
     }
     else
     {
@@ -276,18 +168,8 @@ SEXP omnioptC(
                 REAL(xrealr)[k] = xreal[k];
               }
 
-              // debug
-              for (int k = 0; k < nreal; ++k) {
-                Rprintf("%.2f\n", REAL(xrealr)[k]);
-              }
-
               SEXP call = PROTECT(LCONS(fun, LCONS(xrealr, R_NilValue)));
               SEXP retu = R_forceAndCall(call, 1, rho);
-
-              // debug
-              for (int k = 0;  k < nobj; ++k) {
-                Rprintf("O%i: %.3f\n", k, REAL(retu)[k]);
-              }
 
               // update indiviual
               for (int j = 0; j < nobj; ++j) {
@@ -301,9 +183,14 @@ SEXP omnioptC(
               UNPROTECT(2);
             }
             // <Jakob-end>
+
             merge (parent_pop, child_pop, mixed_pop);
             define_epsilon (mixed_pop, 2*popsize, epsilon);
             fill_nondominated_sort (mixed_pop, parent_pop);
+
+            if (verbose && (i % 10 == 0)) {
+              Rprintf("Generation %i finished.\n", i);
+            }
 
             // if (i%frequency==0 && i>=frequency)
             // {
@@ -313,9 +200,13 @@ SEXP omnioptC(
             //     fflush(fpt);
             //     fclose(fpt);
             // }
-      Rprintf("\n gen = %d",i);
       }
     }
+
+    if (verbose == 1) {
+      Rprintf("Routine successfully terminated.\n");
+    }
+
     if (nreal!=0) {
         free (min_realvar);
         free (max_realvar);
@@ -363,7 +254,6 @@ SEXP omnioptC(
     free(child_pop);
     free(mixed_pop);
 
-    Rprintf("\n Routine successfully exited \n");
     UNPROTECT(3);
     return rout;
 }

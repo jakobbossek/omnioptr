@@ -19,6 +19,7 @@ omniopt(
   init = "random",
   frequency = 1,
   seed = runif(1),
+  verbose = TRUE,
   envir = environment()
 )
 }
@@ -83,6 +84,11 @@ Defaults to 1.}
 \item{seed}{[\code{numeric(1)}]\cr
 Single numeric value in \eqn{[0,1]}.
 Defaults to a random number within this interval.}
+
+\item{verbose}{[\code{logical(1)}]\cr
+If \code{TRUE} the algorithm is verbose, i.e., it prints some informative
+messages in the course of optimization.
+Default is \code{TRUE}.}
 
 \item{envir}{[\code{environment}]\cr
 This parameter is required for calling R functions from C.

@@ -8,10 +8,10 @@
 */
 
 /* .Call calls */
-extern SEXP omnioptC(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP omnioptC(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"omnioptC", (DL_FUNC) &omnioptC, 19},
+    {"omnioptC", (DL_FUNC) &omnioptC, 20},
     {NULL, NULL, 0}
 };
 

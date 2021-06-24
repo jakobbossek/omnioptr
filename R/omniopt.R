@@ -72,6 +72,10 @@
 #' @param seed [\code{numeric(1)}]\cr
 #'   Single numeric value in \eqn{[0,1]}.
 #'   Defaults to a random number within this interval.
+#' @param verbose [\code{logical(1)}]\cr
+#'   If \code{TRUE} the algorithm is verbose, i.e., it prints some informative
+#'   messages in the course of optimization.
+#'   Default is \code{TRUE}.
 #' @param envir [\code{environment}]\cr
 #'   This parameter is required for calling R functions from C.
 #'   Do not change the default unless you know what you are doing!
@@ -111,6 +115,7 @@ omniopt = function(
   init = "random",
   frequency = 1,
   seed = runif(1),
+  verbose = TRUE,
   envir = environment()) {
 
   checkmate::assert_class(fn, "smoof_function")
@@ -147,6 +152,7 @@ omniopt = function(
   }
 
   checkmate::assert_number(seed, lower = 0, upper = 1)
+  checkmate::assert_flag(verbose)
 
   n.objectives = smoof::getNumberOfObjectives(fn)
   dimension = smoof::getNumberOfParameters(fn)
@@ -172,6 +178,7 @@ omniopt = function(
     as.integer(init),
     as.integer(frequency),
     as.double(seed),
+    as.integer(verbose),
     envir)
 
   # convert in "ecr"-style format
