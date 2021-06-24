@@ -137,34 +137,34 @@ void initialize_latin_pop (population *pop)
 
 void initialize_file_pop (population *pop)
 {
-    FILE *fpt;
-    int i, j, k;
-    fpt = fopen("input_var.in","r");
-    if (fpt==NULL)
-    {
-        error("\n The file 'input_var.in' does not exist.");
-    }
-    for (i=0; i<popsize; i++)
-    {
-        if (nreal!=0)
-        {
-            for (j=0; j<nreal; j++)
-            {
-                fscanf(fpt,"%lf\t",&(pop->ind[i].xreal[j]));
-            }
-        }
-        if (nbin!=0)
-        {
-            for (j=0; j<nbin; j++)
-            {
-                for (k=0; k<nbits[j]; k++)
-                {
-                    fscanf(fpt,"%d\t",&(pop->ind[i].gene[j][k]));
-                }
-            }
-        }
-        fscanf(fpt,"\n");
-    }
-    fclose(fpt);
+    // FILE *fpt;
+    // int i, j, k;
+    // fpt = fopen("input_var.in","r");
+    // if (fpt==NULL)
+    // {
+    //     error("\n The file 'input_var.in' does not exist.");
+    // }
+    // for (i=0; i<popsize; i++)
+    // {
+    //     if (nreal!=0)
+    //     {
+    //         for (j=0; j<nreal; j++)
+    //         {
+    //             fscanf(fpt,"%lf\t",&(pop->ind[i].xreal[j]));
+    //         }
+    //     }
+    //     if (nbin!=0)
+    //     {
+    //         for (j=0; j<nbin; j++)
+    //         {
+    //             for (k=0; k<nbits[j]; k++)
+    //             {
+    //                 fscanf(fpt,"%d\t",&(pop->ind[i].gene[j][k]));
+    //             }
+    //         }
+    //     }
+    //     fscanf(fpt,"\n");
+    // }
+    // fclose(fpt);
     return;
 }
