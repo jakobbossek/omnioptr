@@ -1,5 +1,8 @@
 /* A custom doubly linked list implemenation */
 
+#include <R.h>
+#include <Rinternals.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -13,8 +16,7 @@ void insert (list *node, int x)
     list *temp;
     if (node==NULL)
     {
-        printf("\n Error!! asked to enter after a NULL pointer, hence exiting \n");
-        exit(1);
+        error("Asked to enter after a NULL pointer.");
     }
     temp = (list *)malloc(sizeof(list));
     temp->index = x;
@@ -34,8 +36,7 @@ list* del (list *node)
     list *temp;
     if (node==NULL)
     {
-        printf("\n Error!! asked to delete a NULL pointer, hence exiting \n");
-        exit(1);
+        error("Asked to delete a NULL pointer.");
     }
     temp = node->parent;
     temp->child = node->child;

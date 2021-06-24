@@ -1,3 +1,6 @@
+#include <R.h>
+#include <Rinternals.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -139,9 +142,7 @@ void initialize_file_pop (population *pop)
     fpt = fopen("input_var.in","r");
     if (fpt==NULL)
     {
-        printf("\n Input data file for initialization-from-file not found.");
-        printf("\n The file 'input_var.in' does not exist, exiting \n");
-        exit(1);
+        error("\n The file 'input_var.in' does not exist.");
     }
     for (i=0; i<popsize; i++)
     {

@@ -1,3 +1,6 @@
+#include <R.h>
+#include <Rinternals.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -225,8 +228,7 @@ list* search_nearest (population *pop, list *temp1, list *n1, double *min_realva
     double dist;
     if (n1->child->child==NULL)
     {
-        printf("\n Error in restricted mating, hence exiting \n");
-        exit(1);
+        error("Error in restricted mating.");
     }
     if (n1->child->child->child==NULL)
     {

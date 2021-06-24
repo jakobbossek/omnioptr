@@ -1,6 +1,5 @@
 #include <R.h>
 #include <Rinternals.h>
-#include <Rembedded.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -172,17 +171,18 @@ SEXP omnioptC(
     //     Rprintf("\n Wrong value entered, hence exiting \n");
     //     exit(1);
     // }
+    // if (seed<=0.0 || seed>=1.0)
+    // {
+    //     Rprintf("\n Entered seed value is wrong, seed value must be in (0,1) \n");
+    //     exit(1);
+    // }
 
     char *s;
     population *parent_pop;
     population *child_pop;
     population *mixed_pop;
 
-    if (seed<=0.0 || seed>=1.0)
-    {
-        Rprintf("\n Entered seed value is wrong, seed value must be in (0,1) \n");
-        exit(1);
-    }
+
     pdefinit();
     s = (char *)malloc(100*sizeof(double));
     parent_pop = (population *)malloc(sizeof(population));
@@ -311,7 +311,7 @@ SEXP omnioptC(
             //     fflush(fpt);
             //     fclose(fpt);
             // }
-      printf("\n gen = %d",i);
+      Rprintf("\n gen = %d",i);
       }
     }
     if (nreal!=0) {
