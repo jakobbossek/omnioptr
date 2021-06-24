@@ -1,11 +1,13 @@
 Package: omnioptr
-Title: OmniOptimizer in R
-Description: Interface to the OmniOptimizer solver for continuous multi-objective problems.
+Title: Omni-Optimizer
+Description: Interface to the Omni-optimizer for continuous single- and multi-objective
+ multi-optima problems.
 Version: 1.0.0.0000
 Encoding: UTF-8
 Date: 2021-06-23
 Authors@R: c(
-    person("Jakob", "Bossek", email = "j.bossek@gmail.com", role = c("aut", "cre")))
+    person("Jakob", "Bossek", email = "j.bossek@gmail.com", role = c("aut", "cre")),
+    person("Kalyanmoy", "Deb", email = "deb@iitk.ac.in", role = c("aut", "cph")))
 Maintainer: Jakob Bossek <j.bossek@gmail.com>
 License: GPL-3 | file LICENSE
 URL: https://github.com/jakobbossek/omnioptr

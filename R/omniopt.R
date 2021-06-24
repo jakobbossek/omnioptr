@@ -1,7 +1,29 @@
 #' @title
-#' OmniOptimizer.
+#' Omni-Optimizer
 #'
-#' @description Simple interface to the C-implementation of the OmniOptimizer.
+#' @description Simple interface to the C-implementation of the Omni-optimizer
+#' by Deb and Tiwari [1,2]. The algorithm \dQuote{is designed as a generic
+#' multi-objective, multi-optima optimizer} [2].
+#'
+#' @details The function expects a real-valued benchmark function from package
+#' \CRANpkg{smoof}, the population size and the number of generations (the only
+#' stopping condition) as mandatory arguments. Besides there are various
+#' parameters that can be adjusted (see the referenced papers for an in-depth
+#' explanation of the algorithms working principles).
+#'
+#' The original C-code can be found at the
+#' \href{http://www.coin-lab.org/content/source_codes.html}{COIN laboratory website}.
+#'
+#' @references
+#' [1] Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: A generic evolutionary algorithm
+#' for single and multi-objective optimization. European Journal of Operations
+#' Research 185(3): 1062-1087.
+#'
+#' [2] Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: A Procedure for Single and
+#' Multi-objective Optimization. In: Proceedings of the Evolutionary Multi-Criterion
+#' Conference (EMO) 2005: 47-61.
+#'
+#' @keywords optimize
 #'
 #' @param fn [\code{function}]\cr
 #'   Multi-objective function of type \code{smoof_function} (see \CRANpkg{smoof}).
