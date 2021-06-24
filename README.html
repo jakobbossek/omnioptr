@@ -49,17 +49,28 @@ body {
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">200</span>, <span class="at">var.space.niching =</span> <span class="cn">TRUE</span>, <span class="at">delta =</span> <span class="fl">0.001</span>,</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span> <span class="at">envir =</span> <span class="fu">environment</span>())</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fn)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="fu">t</span>(res<span class="sc">$</span>pareto.set))</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Multi-Objective Example</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ===</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">=</span> smoof<span class="sc">::</span><span class="fu">makeZDT2Function</span>(<span class="at">dimension =</span> 4L)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="at">p.cross =</span> <span class="fl">0.9</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">t</span>(res<span class="sc">$</span>pareto.front))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(<span class="fu">t</span>(res<span class="sc">$</span>pareto.set))</span></code></pre></div>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># final points in decision space</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fn)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="fu">t</span>(res<span class="sc">$</span>dec))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># visualization of progress</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(res<span class="sc">$</span>history)) {</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  e <span class="ot">=</span> res<span class="sc">$</span>history[[i]]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(e))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">next</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(fn, <span class="at">main =</span> <span class="fu">sprintf</span>(<span class="st">&quot;Iteration %i&quot;</span>, i))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">t</span>(e<span class="sc">$</span>dec))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.sleep</span>(<span class="fl">0.1</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Multi-Objective Example</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ===</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>fn <span class="ot">=</span> smoof<span class="sc">::</span><span class="fu">makeZDT2Function</span>(<span class="at">dimension =</span> 4L)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>res <span class="ot">=</span> <span class="fu">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="at">p.cross =</span> <span class="fl">0.9</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">t</span>(res<span class="sc">$</span>obj))</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(<span class="fu">t</span>(res<span class="sc">$</span>dec))</span></code></pre></div>
 <h2 id="installation-instructions">Installation Instructions</h2>
 <p>The package will be available at <a href="http://cran.r-project.org">CRAN</a> <em>when it is done</em>. If you are interested in trying out and playing around with the current github developer version use the <a href="https://github.com/hadley/devtools">devtools</a> package and type the following command in R:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;jakobbossek/omnioptr&quot;</span>)</span></code></pre></div>

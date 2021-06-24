@@ -24,17 +24,17 @@ test_that("omnioptr::omniopt produces correct outpur", {
             mate = mate,
             verbose = FALSE)
           checkmate::expect_list(res)
-          checkmate::expect_matrix(res$pareto.set, nrows = d, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
-          checkmate::expect_matrix(res$pareto.front, nrows = o, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
+          checkmate::expect_matrix(res$dec, nrows = d, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
+          checkmate::expect_matrix(res$obj, nrows = o, ncols = pop.size, any.missing = FALSE, all.missing = FALSE)
 
           # check whether fitness values of individuals match the smoof-output
-          expect_true(all(res$pareto.front == apply(res$pareto.set, 2L, f)))
+          expect_true(all(res$obj == apply(res$dec, 2L, f)))
 
           # check if individuals respect box-constraints
           lower = smoof::getLowerBoxConstraints(f)
           upper = smoof::getUpperBoxConstraints(f)
 
-          expect_true(all(apply(res$pareto.set, 2L, function(e) { all((e >= lower) & (e <= upper))})))
+          expect_true(all(apply(res$dec, 2L, function(e) { all((e >= lower) & (e <= upper))})))
         }
       }
     }

@@ -9,6 +9,42 @@
 #include "global.h"
 #include "rand.h"
 
+SEXP prepare_objective_vectors_for_r(population *pop, int popsize, int nobj) {
+  SEXP ret = PROTECT(allocVector(REALSXP, popsize * nobj));
+  double *pret = REAL(ret);
+  int k = 0;
+  for (int i = 0; i < popsize; ++i) {
+    for (int j = 0; j < nobj; ++j) {
+      pret[k] = pop->ind[i].obj[j];
+      ++k;
+    }
+  }
+  UNPROTECT(1);
+  return ret;
+}
+
+SEXP prepare_decision_vectors_for_r(population *pop, int popsize, int nreal) {
+  SEXP ret = PROTECT(allocVector(REALSXP, popsize * nreal));
+  double *pret = REAL(ret);
+  int k = 0;
+  for (int i = 0; i < popsize; ++i) {
+    for (int j = 0; j < nreal; ++j) {
+      pret[k] = pop->ind[i].xreal[j];
+      ++k;
+    }
+  }
+  UNPROTECT(1);
+  return ret;
+}
+
+SEXP prepare_population_for_r(population *pop, int popsize, int nobj, int nreal) {
+  SEXP rpop = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(rpop, 0, prepare_decision_vectors_for_r(pop, popsize, nreal));
+  SET_VECTOR_ELT(rpop, 1, prepare_objective_vectors_for_r(pop, popsize, nobj));
+  UNPROTECT(1);
+  return(rpop);
+}
+
 SEXP omnioptC(
   SEXP fun, // smoof function
   SEXP nobjSEXP, // (integer) number of objectives
@@ -133,7 +169,14 @@ SEXP omnioptC(
 
     define_epsilon (parent_pop, popsize, epsilon);
     assign_rank_and_crowding_distance (parent_pop);
-    // report_pop (parent_pop, fpt1);
+
+    int nsaves = ceil(ngen / frequency);
+    SEXP r_populations = PROTECT(allocVector(VECSXP, nsaves + 1));
+    int curr = 0;
+
+    // save initial population
+    SET_VECTOR_ELT(r_populations, curr, prepare_population_for_r(parent_pop, popsize, nobj, nreal));
+    curr++;
 
     if (ngen==1)
     {
@@ -192,14 +235,10 @@ SEXP omnioptC(
               Rprintf("Generation %i finished.\n", i);
             }
 
-            // if (i%frequency==0 && i>=frequency)
-            // {
-            //     sprintf(s,"pop_var_%d_.out",i);
-            //     fpt = fopen(s,"w");
-            //     report_var(parent_pop,fpt);
-            //     fflush(fpt);
-            //     fclose(fpt);
-            // }
+            if (i % frequency == 0 && i >= frequency) {
+              SET_VECTOR_ELT(r_populations, curr, prepare_population_for_r(parent_pop, popsize, nobj, nreal));
+              curr++;
+            }
       }
     }
 
@@ -218,33 +257,11 @@ SEXP omnioptC(
     }
     free(s);
 
-    // Jakob: we need to construct a vector and convert to matrix in R
-    //FIXME: I guess parent_pop is what we need here
-    SEXP r_pareto_set = PROTECT(allocVector(REALSXP, nreal * popsize));
-    SEXP r_pareto_front = PROTECT(allocVector(REALSXP, nobj * popsize));
-
-    // Prepare Pareto-set approximation
-    int k = 0;
-    for (i = 0; i < popsize; ++i) {
-      for (int j = 0; j < nreal; ++j) {
-        REAL(r_pareto_set)[k] = parent_pop->ind[i].xreal[j];
-        ++k;
-      }
-    }
-
-    // Prepare Pareto-front approximation
-    k = 0;
-    for (i = 0; i < popsize; ++i) {
-      for (int j = 0; j < nobj; ++j) {
-        REAL(r_pareto_front)[k] = parent_pop->ind[i].obj[j];
-        ++k;
-      }
-    }
-
     // Generate list to return both vectors simultaneously
-    SEXP rout = PROTECT(allocVector(VECSXP, 2));
-    SET_VECTOR_ELT(rout, 0, r_pareto_set);
-    SET_VECTOR_ELT(rout, 1, r_pareto_front);
+    SEXP rout = PROTECT(allocVector(VECSXP, 3));
+    SET_VECTOR_ELT(rout, 0, prepare_decision_vectors_for_r(parent_pop, popsize, nreal));
+    SET_VECTOR_ELT(rout, 1, prepare_objective_vectors_for_r(parent_pop, popsize, nobj));
+    SET_VECTOR_ELT(rout, 2, r_populations);
 
     // clean up
     deallocate_memory_pop (parent_pop, popsize);
@@ -254,6 +271,6 @@ SEXP omnioptC(
     free(child_pop);
     free(mixed_pop);
 
-    UNPROTECT(3);
+    UNPROTECT(2);
     return rout;
 }

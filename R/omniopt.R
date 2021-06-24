@@ -81,9 +81,14 @@
 #'   Do not change the default unless you know what you are doing!
 #' @return [\code{List}] List with the following entries:
 #' \describe{
-#'   \item{pareto.set}{Matrix of non-dominated points (each column is a point).}
-#'   \item{pareto.front}{Matrix of non-dominated point objective values
-#'   (each column is a point).}
+#'   \item{dec}{Matrix of points in decision space (each column is a point).}
+#'   \item{obj}{Matrix of objective values in objective space
+#'   (each column is a point). Note that this is a matrix even in the
+#'   single-objective case.}
+#'   \item{history}{A list of named lists. The i-the component contains the
+#'   \dQuote{dec} and \dQuote{obj} values (see preceding bullet points)
+#'   if the population was logged in i-th generation or \code{NULL} if it
+#'   was not logged.}
 #' }
 #'
 #' @examples
@@ -99,7 +104,7 @@
 #'
 #' \dontrun{
 #' plot(fn)
-#' points(t(res$pareto.set))
+#' points(t(res$dec))
 #' }
 #'
 #' # Multi-Objective Example
@@ -109,8 +114,8 @@
 #' fn = smoof::makeZDT2Function(dimension = 4L)
 #' res = omniopt(fn, 100, 1000, p.cross = 0.9, verbose = FALSE)
 #' \dontrun{
-#' plot(t(res$pareto.front))
-#' pairs(t(res$pareto.set))
+#' plot(t(res$obj))
+#' pairs(t(res$dec))
 #' }
 #' @export
 omniopt = function(
@@ -126,7 +131,7 @@ omniopt = function(
   var.space.niching = FALSE,
   obj.space.niching = TRUE,
   init = "random",
-  frequency = 1,
+  frequency = 10,
   seed = runif(1),
   verbose = TRUE,
   envir = environment()) {
@@ -195,8 +200,16 @@ omniopt = function(
     envir)
 
   # convert in "ecr"-style format
-  names(rawres) = c("pareto.set", "pareto.front")
-  rawres$pareto.front = t(matrix(rawres$pareto.front, byrow = TRUE, ncol = n.objectives))
-  rawres$pareto.set = t(matrix(rawres$pareto.set, byrow = TRUE, ncol = dimension))
+  names(rawres) = c("dec", "obj", "history")
+  rawres$obj = t(matrix(rawres$obj, byrow = TRUE, ncol = n.objectives))
+  rawres$dec = t(matrix(rawres$dec, byrow = TRUE, ncol = dimension))
+  rawres$history = lapply(rawres$history, function(e) {
+    if (is.null(e))
+      return(NULL)
+    list(
+      dec = t(matrix(e[[1]], byrow = TRUE, ncol = dimension)),
+      obj = t(matrix(e[[2]], byrow = TRUE, ncol = n.objectives))
+    )
+  })
   return(rawres)
 }

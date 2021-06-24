@@ -38,8 +38,19 @@ fn = smoof::makeHimmelblauFunction()
 res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001,
   verbose = FALSE envir = environment())
 
+# final points in decision space
 plot(fn)
-points(t(res$pareto.set))
+points(t(res$dec))
+
+# visualization of progress
+for (i in 1:length(res$history)) {
+  e = res$history[[i]]
+  if (is.null(e))
+    next
+  plot(fn, main = sprintf("Iteration %i", i))
+  points(t(e$dec))
+  Sys.sleep(0.1)
+}
 
 # Multi-Objective Example
 # ===
@@ -47,8 +58,8 @@ points(t(res$pareto.set))
 set.seed(1) # reproducibility
 fn = smoof::makeZDT2Function(dimension = 4L)
 res = omniopt(fn, 100, 1000, p.cross = 0.9, verbose = FALSE)
-plot(t(res$pareto.front))
-pairs(t(res$pareto.set))
+plot(t(res$obj))
+pairs(t(res$dec))
 ```
 
 ## Installation Instructions
