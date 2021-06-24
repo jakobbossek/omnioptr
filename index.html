@@ -95,17 +95,28 @@
 <span id="cb1-9"><a href="#cb1-9"></a>res =<span class="st"> </span><span class="kw">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dt">var.space.niching =</span> <span class="ot">TRUE</span>, <span class="dt">delta =</span> <span class="fl">0.001</span>,</span>
 <span id="cb1-10"><a href="#cb1-10"></a>  <span class="dt">verbose =</span> <span class="ot">FALSE</span> <span class="dt">envir =</span> <span class="kw">environment</span>())</span>
 <span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">plot</span>(fn)</span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">points</span>(<span class="kw">t</span>(res<span class="op">$</span>pareto.set))</span>
-<span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="co"># Multi-Objective Example</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a><span class="co"># ===</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a></span>
-<span id="cb1-18"><a href="#cb1-18"></a><span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
-<span id="cb1-19"><a href="#cb1-19"></a>fn =<span class="st"> </span>smoof<span class="op">::</span><span class="kw">makeZDT2Function</span>(<span class="dt">dimension =</span> 4L)</span>
-<span id="cb1-20"><a href="#cb1-20"></a>res =<span class="st"> </span><span class="kw">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dt">p.cross =</span> <span class="fl">0.9</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb1-21"><a href="#cb1-21"></a><span class="kw">plot</span>(<span class="kw">t</span>(res<span class="op">$</span>pareto.front))</span>
-<span id="cb1-22"><a href="#cb1-22"></a><span class="kw">pairs</span>(<span class="kw">t</span>(res<span class="op">$</span>pareto.set))</span></code></pre></div>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># final points in decision space</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">plot</span>(fn)</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">points</span>(<span class="kw">t</span>(res<span class="op">$</span>dec))</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="co"># visualization of progress</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(res<span class="op">$</span>history)) {</span>
+<span id="cb1-18"><a href="#cb1-18"></a>  e =<span class="st"> </span>res<span class="op">$</span>history[[i]]</span>
+<span id="cb1-19"><a href="#cb1-19"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(e))</span>
+<span id="cb1-20"><a href="#cb1-20"></a>    <span class="cf">next</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>  <span class="kw">plot</span>(fn, <span class="dt">main =</span> <span class="kw">sprintf</span>(<span class="st">"Iteration %i"</span>, i))</span>
+<span id="cb1-22"><a href="#cb1-22"></a>  <span class="kw">points</span>(<span class="kw">t</span>(e<span class="op">$</span>dec))</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  <span class="kw">Sys.sleep</span>(<span class="fl">0.1</span>)</span>
+<span id="cb1-24"><a href="#cb1-24"></a>}</span>
+<span id="cb1-25"><a href="#cb1-25"></a></span>
+<span id="cb1-26"><a href="#cb1-26"></a><span class="co"># Multi-Objective Example</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="co"># ===</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># reproducibility</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>fn =<span class="st"> </span>smoof<span class="op">::</span><span class="kw">makeZDT2Function</span>(<span class="dt">dimension =</span> 4L)</span>
+<span id="cb1-31"><a href="#cb1-31"></a>res =<span class="st"> </span><span class="kw">omniopt</span>(fn, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dt">p.cross =</span> <span class="fl">0.9</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb1-32"><a href="#cb1-32"></a><span class="kw">plot</span>(<span class="kw">t</span>(res<span class="op">$</span>obj))</span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="kw">pairs</span>(<span class="kw">t</span>(res<span class="op">$</span>dec))</span></code></pre></div>
 </div>
 <div id="installation-instructions" class="section level2">
 <h2 class="hasAnchor">

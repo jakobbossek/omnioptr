@@ -134,7 +134,7 @@ multi-objective, multi-optima optimizer&#8221; [2].</p>
   var.space.niching <span class='op'>=</span> <span class='cn'>FALSE</span>,
   obj.space.niching <span class='op'>=</span> <span class='cn'>TRUE</span>,
   init <span class='op'>=</span> <span class='st'>"random"</span>,
-  frequency <span class='op'>=</span> <span class='fl'>1</span>,
+  frequency <span class='op'>=</span> <span class='fl'>10</span>,
   seed <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>,
   verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
   envir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/environment.html'>environment</a></span><span class='op'>(</span><span class='op'>)</span>
@@ -250,9 +250,14 @@ Do not change the default unless you know what you are doing!</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>[<code>List</code>] List with the following entries:</p><dl>
-  <dt>pareto.set</dt><dd><p>Matrix of non-dominated points (each column is a point).</p></dd>
-  <dt>pareto.front</dt><dd><p>Matrix of non-dominated point objective values
-  (each column is a point).</p></dd>
+  <dt>dec</dt><dd><p>Matrix of points in decision space (each column is a point).</p></dd>
+  <dt>obj</dt><dd><p>Matrix of objective values in objective space
+  (each column is a point). Note that this is a matrix even in the
+  single-objective case.</p></dd>
+  <dt>history</dt><dd><p>A list of named lists. The i-the component contains the
+  &#8220;dec&#8221; and &#8220;obj&#8221; values (see preceding bullet points)
+  if the population was logged in i-th generation or <code>NULL</code> if it
+  was not logged.</p></dd>
 
 </dl>
 
@@ -287,7 +292,7 @@ Conference (EMO) 2005: 47-61.</p>
 
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>fn</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>pareto.set</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/points.html'>points</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>dec</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>}</span>
 
 <span class='co'># Multi-Objective Example</span>
@@ -297,8 +302,8 @@ Conference (EMO) 2005: 47-61.</p>
 <span class='va'>fn</span> <span class='op'>=</span> <span class='fu'>smoof</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/smoof/man/makeZDT2Function.html'>makeZDT2Function</a></span><span class='op'>(</span>dimension <span class='op'>=</span> <span class='fl'>4L</span><span class='op'>)</span>
 <span class='va'>res</span> <span class='op'>=</span> <span class='fu'>omniopt</span><span class='op'>(</span><span class='va'>fn</span>, <span class='fl'>100</span>, <span class='fl'>1000</span>, p.cross <span class='op'>=</span> <span class='fl'>0.9</span>, verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>pareto.front</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/pairs.html'>pairs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>pareto.set</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>obj</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/pairs.html'>pairs</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>dec</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
   </div>
