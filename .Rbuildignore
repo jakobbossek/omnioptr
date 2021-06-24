@@ -3,3 +3,7 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+test.R
+test_all.R
+README.Rmd
+README.html
