@@ -15,6 +15,8 @@ SEXP omnioptC(
   SEXP fun, // smoof function
   SEXP nobjSEXP, // (integer) number of objectives
   SEXP nrealSEXP, // (integer) number of input dimensions (decision space)
+  SEXP min_realvarSEXP, // (double) Vector of lower box constraints
+  SEXP max_realvarSEXP, // (double) Vector of lower box constraints
   SEXP popsizeSEXP, // (integer) population size
   SEXP ngenSEXP, // (integer) number of generations
   SEXP pcross_realSEXP, // (double) probability of crossover
@@ -56,8 +58,8 @@ SEXP omnioptC(
     max_realvar = (double *)malloc(nreal*sizeof(double));
     int i;
     for (i=0; i<nreal; i++) {
-      min_realvar[i] = 0;
-      max_realvar[i] = 1;
+      min_realvar[i] = REAL(min_realvarSEXP)[i];
+      max_realvar[i] = REAL(max_realvarSEXP)[i];
     }
 
     pcross_real = 0.5; // probability of crossover of real variable (0.6-1.0)

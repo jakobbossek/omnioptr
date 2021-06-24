@@ -128,11 +128,15 @@ omniopt = function(
 
   n.objectives = smoof::getNumberOfObjectives(fn)
   dimension = smoof::getNumberOfParameters(fn)
+  lower = smoof::getLowerBoxConstraints(fn)
+  upper = smoof::getUpperBoxConstraints(fn)
 
   rawres = .Call("omnioptC",
     fn,
     as.integer(n.objectives),
     as.integer(dimension),
+    as.double(lower),
+    as.double(upper),
     as.integer(pop.size),
     as.integer(n.gens),
     as.double(p.cross),
