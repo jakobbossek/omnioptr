@@ -1,5 +1,5 @@
 
-# omnioptr: Interface for the Omni-Optimizer Algorithm
+# omnioptr: Omni-Optimizer Algorithm
 
 <!-- badges: start -->
 
@@ -23,7 +23,8 @@ multi-objective, multi-optima optimizer” (2).
 
 2.  Kalyanmoy Deb, Santosh Tiwari: *Omni-optimizer: A Procedure for
     Single and Multi-objective Optimization*. In: Proceedings of the
-    Evolutionary Multi-Criterion Conference (EMO) 2005: 47-61.s
+    Evolutionary Multi-Criterion Optimization Conference (EMO) 2005:
+    47-61.
 
 ## Example
 
@@ -36,7 +37,7 @@ library(smoof)
 
 set.seed(1) # reproducibility
 fn = smoof::makeHimmelblauFunction()
-res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001, verbose = FALSE)
+res = omniopt(fn, 100, 200, var.space.niching = TRUE, delta = 0.001, frequency = 1L, verbose = FALSE)
 
 # final points in decision space
 plot(fn)
@@ -66,18 +67,18 @@ pairs(t(res$dec))
 
 The package will be available at [CRAN](http://cran.r-project.org) *when
 it is done*. If you are interested in trying out and playing around with
-the current github developer version use the
+the current github development version use the
 [devtools](https://github.com/hadley/devtools) package and type the
 following command in R:
 
 ``` r
-remotes::install_github("jakobbossek/omnioptr")
+devtools::install_github("jakobbossek/omnioptr")
 ```
 
 ## Getting help
 
 Please address questions and missing features about the *omnioptr* as
-weell as annoying bug reports in the [issue
+well as annoying bug reports in the [issue
 tracker](https://github.com/jakobbossek/omnioptr/issues). Pay attention
 to explain your problem as good as possible. At its best you provide an
 example, so I can reproduce your problem quickly. Please avoid sending

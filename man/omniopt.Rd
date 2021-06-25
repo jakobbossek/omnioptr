@@ -17,7 +17,7 @@ omniopt(
   var.space.niching = FALSE,
   obj.space.niching = TRUE,
   init = "random",
-  frequency = 10,
+  frequency = 10L,
   seed = runif(1),
   verbose = TRUE,
   envir = environment()
@@ -25,14 +25,15 @@ omniopt(
 }
 \arguments{
 \item{fn}{[\code{function}]\cr
-Multi-objective function of type \code{smoof_function} (see \CRANpkg{smoof}).}
+Single- or multi-objective function of type \code{smoof_function}
+(see \CRANpkg{smoof}) with continuous decision space.}
 
 \item{pop.size}{[\code{integer(1)}]\cr
 Population size. Must be a multiple of 4.
 The default is 4.}
 
 \item{n.gens}{[\code{integer(1)}]\cr
-The number of generations (stopping condition).
+The number of generations (the only stopping condition).
 Defaults to 100.}
 
 \item{p.cross}{[\code{numeric(1)}]\cr
@@ -44,12 +45,12 @@ Probablity of mutation (within \eqn{[0,1]}).
 Default to \eqn{1/n} where \eqn{n} is the number of decision variables of
 \code{fn}.}
 
-\item{eta.cross}{[\code{integer(1)}]\cr
-Value of distribution index for crossover in \eqn{\{5, \ldots, 20\}}.
+\item{eta.cross}{[\code{numeric(1)}]\cr
+Value of distribution index for crossover in \eqn{[5, \ldots, 20]}.
 Default is 20.}
 
-\item{eta.mut}{[\code{integer(1)}]\cr
-Value of distribution index for mutation in \eqn{\{5, \ldots, 50\}}.
+\item{eta.mut}{[\code{numeric(1)}]\cr
+Value of distribution index for mutation in \eqn{[5, , 50]}.
 Default is 20.}
 
 \item{mate}{[\code{character(1)}]\cr
@@ -57,32 +58,33 @@ Choice for selection restriction. Either \dQuote{normal} for normal selection
 or \dQuote{restricted} for restricted selection.}
 
 \item{delta}{[\code{numeric(1)}]\cr
-Value \eqn{\delta \in (0.0,1.0)} for loose domination.
+Value \eqn{\delta \in [0.0,1.0]} for loose domination.
 Default is \eqn{0.001}.}
 
 \item{var.space.niching}{[\code{logical(1)}]\cr
 Use variable space niching?
 Default is \code{FALSE}.
-Note that at least on of \code{var.space.niching} or \code{obj.space.niching}
+Note that at least one of \code{var.space.niching} or \code{obj.space.niching}
 must be \code{TRUE}.}
 
 \item{obj.space.niching}{[\code{logical(1)}]\cr
 Use objective space niching?
 Default is \code{TRUE}.
-Note that at least on of \code{var.space.niching} or \code{obj.space.niching}
+Note that at least one of \code{var.space.niching} or \code{obj.space.niching}
 must be \code{TRUE}.}
 
 \item{init}{[\code{character(1)}]\cr
-This parameter determines how to initialize the  population: \dQuote{random}
+This parameter determines how to initialize the population: \dQuote{random}
 (the default) for uniform random generation and \dQuote{lhs} for
 Latin-Hypercube-Sampling (LHS).}
 
 \item{frequency}{[\code{integer(1)}]\cr
-Frequency with which the population information is to be stored.
-Defaults to 1.}
+Frequency with which the population information (points and objetive function values)
+is to be stored.
+Defaults to 10, i.e., information is stored in every 10th generation.}
 
 \item{seed}{[\code{numeric(1)}]\cr
-Single numeric value in \eqn{[0,1]}.
+Seed for random number generaator. Must be a scalar numeric value in \eqn{[0,1]}.
 Defaults to a random number within this interval.}
 
 \item{verbose}{[\code{logical(1)}]\cr
@@ -101,7 +103,7 @@ Do not change the default unless you know what you are doing!}
   \item{obj}{Matrix of objective values in objective space
   (each column is a point). Note that this is a matrix even in the
   single-objective case.}
-  \item{history}{A list of named lists. The i-the component contains the
+  \item{history}{A list of named lists. The i-th component contains the
   \dQuote{dec} and \dQuote{obj} values (see preceding bullet points)
   if the population was logged in i-th generation or \code{NULL} if it
   was not logged.}
@@ -156,6 +158,6 @@ Research 185(3): 1062-1087.
 
 [2] Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: A Procedure for Single and
 Multi-objective Optimization. In: Proceedings of the Evolutionary Multi-Criterion
-Conference (EMO) 2005: 47-61.
+Optimization Conference (EMO) 2005: 47-61.
 }
 \keyword{optimize}
