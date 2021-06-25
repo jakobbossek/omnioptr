@@ -67,9 +67,9 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="omnioptr-interface-for-the-omni-optimizer-algorithm" class="section level1">
+<div id="omnioptr-omni-optimizer-algorithm" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#omnioptr-interface-for-the-omni-optimizer-algorithm" class="anchor"></a>omnioptr: Interface for the Omni-Optimizer Algorithm</h1></div>
+<a href="#omnioptr-omni-optimizer-algorithm" class="anchor"></a>omnioptr: Omni-Optimizer Algorithm</h1></div>
 <!-- badges: start -->
 
 <div id="introduction" class="section level2">
@@ -78,7 +78,7 @@
 <p>Simple interface to the C-implementation of the Omni-optimizer by Deb and Tiwari (1,2). The algorithm “is designed as a generic multi-objective, multi-optima optimizer” (2).</p>
 <ol>
 <li><p>Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: <em>A generic evolutionary algorithm for single and multi-objective optimization</em>. European Journal of Operations Research 185(3): 1062-1087.</p></li>
-<li><p>Kalyanmoy Deb, Santosh Tiwari: <em>Omni-optimizer: A Procedure for Single and Multi-objective Optimization</em>. In: Proceedings of the Evolutionary Multi-Criterion Conference (EMO) 2005: 47-61.s</p></li>
+<li><p>Kalyanmoy Deb, Santosh Tiwari: <em>Omni-optimizer: A Procedure for Single and Multi-objective Optimization</em>. In: Proceedings of the Evolutionary Multi-Criterion Optimization Conference (EMO) 2005: 47-61.</p></li>
 </ol>
 </div>
 <div id="example" class="section level2">
@@ -93,7 +93,7 @@
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="co"># reproducibility</span>
 <span class="va">fn</span> <span class="op">=</span> <span class="fu">smoof</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/smoof/man/makeHimmelblauFunction.html">makeHimmelblauFunction</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="reference/omniopt.html">omniopt</a></span><span class="op">(</span><span class="va">fn</span>, <span class="fl">100</span>, <span class="fl">200</span>, var.space.niching <span class="op">=</span> <span class="cn">TRUE</span>, delta <span class="op">=</span> <span class="fl">0.001</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="reference/omniopt.html">omniopt</a></span><span class="op">(</span><span class="va">fn</span>, <span class="fl">100</span>, <span class="fl">200</span>, var.space.niching <span class="op">=</span> <span class="cn">TRUE</span>, delta <span class="op">=</span> <span class="fl">0.001</span>, frequency <span class="op">=</span> <span class="fl">1L</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># final points in decision space</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fn</span><span class="op">)</span>
@@ -121,14 +121,14 @@
 <div id="installation-instructions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation-instructions" class="anchor"></a>Installation Instructions</h2>
-<p>The package will be available at <a href="http://cran.r-project.org">CRAN</a> <em>when it is done</em>. If you are interested in trying out and playing around with the current github developer version use the <a href="https://github.com/hadley/devtools">devtools</a> package and type the following command in R:</p>
+<p>The package will be available at <a href="http://cran.r-project.org">CRAN</a> <em>when it is done</em>. If you are interested in trying out and playing around with the current github development version use the <a href="https://github.com/hadley/devtools">devtools</a> package and type the following command in R:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jakobbossek/omnioptr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jakobbossek/omnioptr"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="getting-help" class="section level2">
 <h2 class="hasAnchor">
 <a href="#getting-help" class="anchor"></a>Getting help</h2>
-<p>Please address questions and missing features about the <em>omnioptr</em> as weell as annoying bug reports in the <a href="https://github.com/jakobbossek/omnioptr/issues">issue tracker</a>. Pay attention to explain your problem as good as possible. At its best you provide an example, so I can reproduce your problem quickly. Please avoid sending e-mails.</p>
+<p>Please address questions and missing features about the <em>omnioptr</em> as well as annoying bug reports in the <a href="https://github.com/jakobbossek/omnioptr/issues">issue tracker</a>. Pay attention to explain your problem as good as possible. At its best you provide an example, so I can reproduce your problem quickly. Please avoid sending e-mails.</p>
 </div>
 </div>
   </div>
