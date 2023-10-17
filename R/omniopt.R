@@ -35,10 +35,17 @@
 #'   The number of generations (the only stopping condition).
 #'   Defaults to 100.
 #' @param p.cross [\code{numeric(1)}]\cr
-#'   Probability of crossover (within \eqn{[0.6, 1.0]}).
+#'   Probability of crossover of real-valued variables (within \eqn{[0.6, 1.0]}).
 #'   Defaults to 0.6.
 #' @param p.mut [\code{numeric(1)}]\cr
-#'   Probablity of mutation (within \eqn{[0,1]}).
+#'   Probablity of mutation of real-valued variables (within \eqn{[0,1]}).
+#'   Default to \eqn{1/n} where \eqn{n} is the number of decision variables of
+#'   \code{fn}.
+#' @param p.cross.bin [\code{numeric(1)}]\cr
+#'   Probability of crossover of binary-valued variables (within \eqn{[0.6, 1.0]}).
+#'   Defaults to 0.6.
+#' @param p.mut.bin [\code{numeric(1)}]\cr
+#'   Probablity of mutation of binary-valued variables (within \eqn{[0,1]}).
 #'   Default to \eqn{1/n} where \eqn{n} is the number of decision variables of
 #'   \code{fn}.
 #' @param eta.cross [\code{numeric(1)}]\cr
@@ -126,6 +133,8 @@ omniopt = function(
   n.gens = 100L,
   p.cross = 0.6,
   p.mut = 1/smoof::getNumberOfParameters(fn),
+  p.cross.bin = 0.6,
+  p.mut.bin = 1/smoof::getNumberOfParameters(fn),
   eta.cross = 20L,
   eta.mut = 20L,
   mate = "normal",
@@ -175,16 +184,30 @@ omniopt = function(
   checkmate::assert_flag(verbose)
 
   n.objectives = smoof::getNumberOfObjectives(fn)
-  dimension = smoof::getNumberOfParameters(fn)
+
+  par.set = getParamSet(fn)
+  types = ParamHelpers::getParamTypeCounts(par.set)
+  if ((types$numericvector > 0L) & (types$integervector > 0L)) {
+    stop("[omniopt] Functions with both integervector and numericvector parameter sets are
+      currently not supported.")
+  }
+
+  dimension.real = if (types$numericvector > 0L) smoof::getNumberOfParameters(fn) else 0L
+  dimension.bin = if (types$integervector > 0L) smoof::getNumberOfParameters(fn) else 0L
+
   lower = smoof::getLowerBoxConstraints(fn)
   upper = smoof::getUpperBoxConstraints(fn)
 
   rawres = .Call("omnioptC",
     fn,
     as.integer(n.objectives),
-    as.integer(dimension),
+    as.integer(dimension.real),
     as.double(lower),
     as.double(upper),
+    as.integer(dimension.bin),
+    as.integer(rep(1L, dimension.bin)),
+    as.double(p.cross.bin),
+    as.double(p.mut.bin),
     as.integer(pop.size),
     as.integer(n.gens),
     as.double(p.cross),
