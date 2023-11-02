@@ -16,7 +16,7 @@ SEXP prepare_objective_vectors_for_r(population *pop, int popsize, int nobj) {
   for (int i = 0; i < popsize; ++i) {
     for (int j = 0; j < nobj; ++j) {
       pret[k] = pop->ind[i].obj[j];
-      Rprintf("Obj %i: %.3f ", j, pop->ind[i].obj[j]);
+      // Rprintf("Obj %i: %.3f ", j, pop->ind[i].obj[j]);
       ++k;
     }
   }
@@ -25,17 +25,13 @@ SEXP prepare_objective_vectors_for_r(population *pop, int popsize, int nobj) {
 }
 
 SEXP prepare_real_decision_vectors_for_r(population *pop, int popsize, int nreal) {
-  if (nreal == 0) {
-    return R_NilValue;
-  }
-
   SEXP ret = PROTECT(allocVector(REALSXP, popsize * nreal));
   double *pret = REAL(ret);
   int k = 0;
   for (int i = 0; i < popsize; ++i) {
     for (int j = 0; j < nreal; ++j) {
       pret[k] = pop->ind[i].xreal[j];
-      Rprintf("Gene %i: %.3f ", j, pop->ind[i].xreal[j]);
+      // Rprintf("Gene %i: %.3f ", j, pop->ind[i].xreal[j]);
       ++k;
     }
   }
@@ -44,16 +40,13 @@ SEXP prepare_real_decision_vectors_for_r(population *pop, int popsize, int nreal
 }
 
 SEXP prepare_binary_decision_vectors_for_r(population *pop, int popsize, int nbin) {
-  if (nbin == 0) {
-    return R_NilValue;
-  }
-  SEXP ret = PROTECT(allocVector(INTSXP, popsize * nreal));
+  SEXP ret = PROTECT(allocVector(INTSXP, popsize * nbin));
   int *pret = INTEGER(ret);
   int k = 0;
   for (int i = 0; i < popsize; ++i) {
     for (int j = 0; j < nbin; ++j) {
       pret[k] = pop->ind[i].gene[j][0];
-      Rprintf("Gene %i: %i ", j, pop->ind[i].gene[j][0]);
+      // Rprintf("Gene %i: %i ", j, pop->ind[i].gene[j][0]);
       ++k;
     }
   }
@@ -63,11 +56,14 @@ SEXP prepare_binary_decision_vectors_for_r(population *pop, int popsize, int nbi
 
 
 SEXP prepare_population_for_r(population *pop, int popsize, int nobj, int nreal, int nbin) {
-  SEXP rpop = PROTECT(allocVector(VECSXP, 3));
-  SET_VECTOR_ELT(rpop, 0, prepare_real_decision_vectors_for_r(pop, popsize, nreal));
-  SET_VECTOR_ELT(rpop, 1, prepare_binary_decision_vectors_for_r(pop, popsize, nbin));
-  SET_VECTOR_ELT(rpop, 2, prepare_objective_vectors_for_r(pop, popsize, nobj));
-  UNPROTECT(2);
+  SEXP rpop = PROTECT(allocVector(VECSXP, 2));
+  if (nreal != 0) {
+    SET_VECTOR_ELT(rpop, 0, prepare_real_decision_vectors_for_r(pop, popsize, nreal));
+  } else {
+    SET_VECTOR_ELT(rpop, 0, prepare_binary_decision_vectors_for_r(pop, popsize, nbin));
+  }
+  SET_VECTOR_ELT(rpop, 1, prepare_objective_vectors_for_r(pop, popsize, nobj));
+  UNPROTECT(1);
   return(rpop);
 }
 
@@ -104,6 +100,9 @@ SEXP omnioptC(
     nreal = asInteger(nrealSEXP); // number of real variables
     nbin = asInteger(nbinSEXP); // number of binary variables
     nbits = INTEGER(nbitsSEXP); // number of bits per binary variable
+    // for (int i = 0; i < nbin; ++i) {
+    //   Rprintf("nBits for %i: %i", i, nbits[i]);
+    // }
 
     //FIXME: Jakob: currently we support only unconstrained optimisation
     ncon = 0; // number of constraints
@@ -122,12 +121,22 @@ SEXP omnioptC(
     epsilon = (double *)malloc(nobj*sizeof(double));
 
     // box constraints for real variables
-    min_realvar = (double *)malloc(nreal*sizeof(double));
-    max_realvar = (double *)malloc(nreal*sizeof(double));
-    int i;
-    for (i=0; i<nreal; i++) {
-      min_realvar[i] = REAL(min_realvarSEXP)[i];
-      max_realvar[i] = REAL(max_realvarSEXP)[i];
+    if (nreal > 0) {
+      min_realvar = (double *)malloc(nreal*sizeof(double));
+      max_realvar = (double *)malloc(nreal*sizeof(double));
+      for (int i=0; i<nreal; i++) {
+        min_realvar[i] = REAL(min_realvarSEXP)[i];
+        max_realvar[i] = REAL(max_realvarSEXP)[i];
+      }
+    }
+
+    if (nbin > 0) {
+      min_binvar = (double *)malloc(nbin*sizeof(double));
+      max_binvar = (double *)malloc(nbin*sizeof(double));
+      for (int i=0; i<nbin; i++) {
+        min_binvar[i] = INF;
+        max_binvar[i] = -INF;
+      }
     }
 
     pcross_real = asReal(pcross_realSEXP); // probability of crossover of real variable (0.6-1.0)
@@ -166,14 +175,14 @@ SEXP omnioptC(
     decode_pop(parent_pop);
 
     if (verbose == 1) {
-      Rprintf("Omni-Optimizer (nreal: %i, nobj: %i)\n", nreal, nobj);
+      Rprintf("Omni-Optimizer (nreal: %i, nbin: %i, nobj: %i)\n", nreal, nbin, nobj);
       Rprintf("Population size: %i\n", popsize);
       Rprintf("Nr. of generations: %i\n", ngen);
     }
 
     // <Jakob-start>
     // Many thanks to: https://ro-che.info/articles/2017-08-18-call-r-function-from-c
-    evaluate_pop (parent_pop);
+    // evaluate_pop (parent_pop);
 
     for (int i = 0; i < popsize; i++)
     {
@@ -200,10 +209,11 @@ SEXP omnioptC(
         // drop garbage collector protection
         UNPROTECT(2);
       } else { // nbin > 0
+        Rprintf("Evaluating ...");
         // convert to SEXP
         SEXP xbinr = PROTECT(allocVector(INTSXP, nbin));
         for (int k = 0; k < nbin; ++k) {
-          REAL(xbinr)[k] = parent_pop->ind[i].gene[k][0];
+          INTEGER(xbinr)[k] = parent_pop->ind[i].gene[k][0];
         }
 
         SEXP call = PROTECT(LCONS(fun, LCONS(xbinr, R_NilValue)));
@@ -239,7 +249,7 @@ SEXP omnioptC(
     }
     else
     {
-        for (i=2; i<=ngen; i++)
+        for (int cgen = 2; cgen<=ngen; cgen++)
         {
             if (mate==0)
             {
@@ -286,7 +296,7 @@ SEXP omnioptC(
                 // convert to SEXP
                 SEXP xbinr = PROTECT(allocVector(INTSXP, nbin));
                 for (int k = 0; k < nbin; ++k) {
-                  REAL(xbinr)[k] = parent_pop->ind[i].gene[k][0];
+                  INTEGER(xbinr)[k] = parent_pop->ind[i].gene[k][0];
                 }
 
                 SEXP call = PROTECT(LCONS(fun, LCONS(xbinr, R_NilValue)));
@@ -310,11 +320,11 @@ SEXP omnioptC(
             define_epsilon (mixed_pop, 2*popsize, epsilon);
             fill_nondominated_sort (mixed_pop, parent_pop);
 
-            if (verbose && (i % 10 == 0)) {
-              Rprintf("Generation %i finished.\n", i);
+            if (verbose && (cgen % 10 == 0)) {
+              Rprintf("Generation %i finished.\n", cgen);
             }
 
-            if (i % frequency == 0 && i >= frequency) {
+            if (cgen % frequency == 0 && cgen >= frequency) {
               SET_VECTOR_ELT(r_populations, curr, prepare_population_for_r(parent_pop, popsize, nobj, nreal, nbin));
               curr++;
             }
@@ -325,23 +335,27 @@ SEXP omnioptC(
       Rprintf("Routine successfully terminated.\n");
     }
 
-    if (nreal!=0) {
-        free (min_realvar);
-        free (max_realvar);
-    }
-    if (nbin!=0) {
-        free (nbits);
-        free (min_binvar);
-        free (max_binvar);
-    }
-    free(s);
-
     // Generate list to return both vectors simultaneously
-    SEXP rout = PROTECT(allocVector(VECSXP, 4));
-    SET_VECTOR_ELT(rout, 0, prepare_real_decision_vectors_for_r(parent_pop, popsize, nreal));
-    SET_VECTOR_ELT(rout, 1, prepare_binary_decision_vectors_for_r(parent_pop, popsize, nbin));
-    SET_VECTOR_ELT(rout, 2, prepare_objective_vectors_for_r(parent_pop, popsize, nobj));
-    SET_VECTOR_ELT(rout, 3, r_populations);
+    SEXP rout = PROTECT(allocVector(VECSXP, 3));
+    if (nreal != 0) {
+      SET_VECTOR_ELT(rout, 0, prepare_real_decision_vectors_for_r(parent_pop, popsize, nreal));
+    } else {
+      SET_VECTOR_ELT(rout, 0, prepare_binary_decision_vectors_for_r(parent_pop, popsize, nbin));
+    }
+    SET_VECTOR_ELT(rout, 1, prepare_objective_vectors_for_r(parent_pop, popsize, nobj));
+    SET_VECTOR_ELT(rout, 2, r_populations);
+
+    Rprintf("Fuck");
+
+    free(s);
+    if (nreal!=0) {
+      free (min_realvar);
+      free (max_realvar);
+    }
+    if (nbits!=0) {
+      free (min_binvar);
+      free (max_binvar);
+    }
 
     // clean up
     deallocate_memory_pop (parent_pop, popsize);
@@ -351,6 +365,6 @@ SEXP omnioptC(
     free(child_pop);
     free(mixed_pop);
 
-    UNPROTECT(3);
+    UNPROTECT(2);
     return rout;
 }

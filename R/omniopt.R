@@ -1,18 +1,23 @@
 #' @title
-#' Omni-Optimizer
+#' OmniOptimizer
 #'
-#' @description Simple interface to the C-implementation of the Omni-optimizer
+#' @description Simple interface to the C-implementation of the OmniOptimizer
 #' by Deb and Tiwari [1,2]. The algorithm \dQuote{is designed as a generic
 #' multi-objective, multi-optima optimizer} [2].
 #'
-#' @details The function expects a real-valued benchmark function from package
-#' \CRANpkg{smoof}, the population size and the number of generations (the only
+#' @details The function expects a real-valued xor a binary-valued benchmark function
+#' from package \CRANpkg{smoof}, the population size and the number of generations (the only
 #' stopping condition) as mandatory arguments. Besides there are various
 #' parameters that can be adjusted (see the referenced papers for an in-depth
 #' explanation of the algorithms working principles).
 #'
 #' The original C-code can be found at the
 #' \href{http://www.coin-lab.org/content/source_codes.html}{COIN laboratory website}.
+#'
+#' @note The interface is not complete, i.e., mixed functions with binary and
+#' real-valued inputs are currently not supported. Moreover, the function \emph{minimizes}
+#' all objectives. So you have to make sure to convert your problems if minimization
+#' is desired.
 #'
 #' @references
 #' [1] Kalyanmoy Deb, Santosh Tiwari: Omni-optimizer: A generic evolutionary algorithm
@@ -27,7 +32,8 @@
 #'
 #' @param fn [\code{function}]\cr
 #'   Single- or multi-objective function of type \code{smoof_function}
-#'   (see \CRANpkg{smoof}) with continuous decision space.
+#'   (see \CRANpkg{smoof}) with either purely continuous (NumericVectorParam parameter set)
+#'   or purely binary (IntegerVactorParam parameter set) decision space.
 #' @param pop.size [\code{integer(1)}]\cr
 #'   Population size. Must be a multiple of 4.
 #'   The default is 4.
@@ -226,6 +232,7 @@ omniopt = function(
 
   # convert in "ecr"-style format
   names(rawres) = c("dec", "obj", "history")
+  dimension = max(dimension.real, dimension.bin)
   rawres$obj = t(matrix(rawres$obj, byrow = TRUE, ncol = n.objectives))
   rawres$dec = t(matrix(rawres$dec, byrow = TRUE, ncol = dimension))
   rawres$history = lapply(rawres$history, function(e) {
