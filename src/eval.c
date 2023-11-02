@@ -10,7 +10,7 @@ void evaluate_pop (population *pop)
     for (int i=0; i<popsize; i++)
     {
         int j = 0;
-        Rprintf("tested individual %i %i / %i ...", j, i, popsize);
+        // Rprintf("tested individual %i %i / %i ...", j, i, popsize);
         evaluate_ind (&(pop->ind[i]));
     }
     return;

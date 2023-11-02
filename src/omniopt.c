@@ -209,7 +209,7 @@ SEXP omnioptC(
         // drop garbage collector protection
         UNPROTECT(2);
       } else { // nbin > 0
-        Rprintf("Evaluating ...");
+        // Rprintf("Evaluating ...");
         // convert to SEXP
         SEXP xbinr = PROTECT(allocVector(INTSXP, nbin));
         for (int k = 0; k < nbin; ++k) {
@@ -344,8 +344,6 @@ SEXP omnioptC(
     }
     SET_VECTOR_ELT(rout, 1, prepare_objective_vectors_for_r(parent_pop, popsize, nobj));
     SET_VECTOR_ELT(rout, 2, r_populations);
-
-    Rprintf("Fuck");
 
     free(s);
     if (nreal!=0) {
