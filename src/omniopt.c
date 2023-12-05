@@ -296,7 +296,7 @@ SEXP omnioptC(
                 // convert to SEXP
                 SEXP xbinr = PROTECT(allocVector(INTSXP, nbin));
                 for (int k = 0; k < nbin; ++k) {
-                  INTEGER(xbinr)[k] = parent_pop->ind[i].gene[k][0];
+                  INTEGER(xbinr)[k] = child_pop->ind[i].gene[k][0];
                 }
 
                 SEXP call = PROTECT(LCONS(fun, LCONS(xbinr, R_NilValue)));
@@ -304,11 +304,11 @@ SEXP omnioptC(
 
                 // update indiviual
                 for (int j = 0; j < nobj; ++j) {
-                  parent_pop->ind[i].obj[j] = REAL(retu)[j];
+                  child_pop->ind[i].obj[j] = REAL(retu)[j];
                 }
 
                 // we do not deal with constraint problems
-                parent_pop->ind[i].constr_violation = 0.0;
+                child_pop->ind[i].constr_violation = 0.0;
 
                 // drop garbage collector protection
                 UNPROTECT(2);
